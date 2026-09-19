@@ -5,29 +5,237 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp">
+    android:background="#080F2A">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="My Video Editor"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="12dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Video Editor Project"
-        android:textSize="16sp"
-        android:layout_marginBottom="32dp"/>
-
-    <Button
-        android:id="@+id/createNewVideo"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="+  Create New Video"
-        android:textSize="17sp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- TOP BANNER -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="145dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="16dp"
+                android:background="@drawable/bg_banner">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="KC♥EDITOR"
+                    android:textColor="#FFFFFF"
+                    android:textSize="34sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Video Editor &amp; Maker"
+                    android:textColor="#FFFFFF"
+                    android:textSize="17sp"
+                    android:layout_marginTop="4dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Edit  •  Create  •  Share"
+                    android:textColor="#FFE082"
+                    android:textSize="15sp"
+                    android:layout_marginTop="6dp"/>
+
+            </LinearLayout>
+
+            <!-- FILTER TABS -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginTop="14dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="125dp"
+                        android:layout_height="52dp"
+                        android:gravity="center"
+                        android:text="🎬  All Videos"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:background="@drawable/bg_tab_selected"/>
+
+                    <TextView
+                        android:layout_width="110dp"
+                        android:layout_height="52dp"
+                        android:layout_marginStart="8dp"
+                        android:gravity="center"
+                        android:text="▶  Edited"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:background="@drawable/bg_tab"/>
+
+                    <TextView
+                        android:layout_width="145dp"
+                        android:layout_height="52dp"
+                        android:layout_marginStart="8dp"
+                        android:gravity="center"
+                        android:text="📁  Other Videos"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:background="@drawable/bg_tab"/>
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- SECTION TITLE -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Videos"
+                android:textColor="#FFFFFF"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="10dp"/>
+
+            <!-- VIDEO CARDS -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="95dp"
+                    android:orientation="vertical"
+                    android:gravity="center_vertical"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_card"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🎬  Recent Video"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tap to continue editing"
+                        android:textColor="#B8C4E8"
+                        android:textSize="14sp"
+                        android:layout_marginTop="5dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="95dp"
+                    android:orientation="vertical"
+                    android:gravity="center_vertical"
+                    android:padding="14dp"
+                    android:background="@drawable/bg_card"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🎥  My Project"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your saved video project"
+                        android:textColor="#B8C4E8"
+                        android:textSize="14sp"
+                        android:layout_marginTop="5dp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- CREATE BUTTON -->
+            <TextView
+                android:id="@+id/createNewVideo"
+                android:layout_width="match_parent"
+                android:layout_height="68dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="14dp"
+                android:gravity="center"
+                android:text="+  CREATE NEW VIDEO"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_create_button"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- BOTTOM NAVIGATION -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="#0D1638">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="⌂\nHome"
+            android:textColor="#FF4FCB"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="▶\nVideos"
+            android:textColor="#B8C4E8"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="★\nTemplates"
+            android:textColor="#B8C4E8"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="⚙\nSettings"
+            android:textColor="#B8C4E8"
+            android:textSize="14sp"/>
+
+    </LinearLayout>
 
 </LinearLayout>

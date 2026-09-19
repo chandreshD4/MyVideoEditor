@@ -3,8 +3,7 @@ package com.myvideoeditor
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
-import android.widget.Button
+import android.widget.TextView
 
 class MainActivity : Activity() {
 
@@ -14,7 +13,7 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val createButton = findViewById<Button>(R.id.createNewVideo)
+        val createButton = findViewById<TextView>(R.id.createNewVideo)
 
         createButton.setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
