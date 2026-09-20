@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#080B18"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create New Video"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:paddingTop="12dp"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose your video frame"
+            android:textColor="#AEB5D0"
+            android:textSize="15sp"
+            android:gravity="center"
+            android:paddingBottom="24dp" />
+
+        <TextView
+            android:id="@+id/formatShorts"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginBottom="12dp"
+            android:background="#171C32"
+            android:gravity="center_vertical"
+            android:paddingStart="22dp"
+            android:text="YouTube Shorts     9:16"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/formatYouTube"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginBottom="12dp"
+            android:background="#171C32"
+            android:gravity="center_vertical"
+            android:paddingStart="22dp"
+            android:text="YouTube Video      16:9"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/formatInstagram"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginBottom="12dp"
+            android:background="#171C32"
+            android:gravity="center_vertical"
+            android:paddingStart="22dp"
+            android:text="Instagram           9:16"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/formatFacebook"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginBottom="12dp"
+            android:background="#171C32"
+            android:gravity="center_vertical"
+            android:paddingStart="22dp"
+            android:text="Facebook            9:16"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/formatSquare"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginBottom="12dp"
+            android:background="#171C32"
+            android:gravity="center_vertical"
+            android:paddingStart="22dp"
+            android:text="Square              1:1"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/formatCustom"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:background="#171C32"
+            android:gravity="center_vertical"
+            android:paddingStart="22dp"
+            android:text="Custom              Custom"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</ScrollView>

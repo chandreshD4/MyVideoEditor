@@ -1,13 +1,19 @@
 package com.myvideoeditor.editor
 
 import android.app.Activity
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.HorizontalScrollView
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.VideoView
-import com.myvideoeditor.R
 
 class EditorActivity : Activity() {
 
@@ -15,435 +21,579 @@ class EditorActivity : Activity() {
         const val EXTRA_PROJECT_ID = "project_id"
         const val EXTRA_PROJECT_NAME = "project_name"
         const val EXTRA_VIDEO_URI = "video_uri"
+
+        const val EXTRA_ASPECT_RATIO = "aspect_ratio"
+        const val EXTRA_SOURCE_TYPE = "source_type"
+        const val EXTRA_BACKGROUND_COLOR = "background_color"
     }
 
-    private lateinit var videoPreview: VideoView
-    private lateinit var playButton: TextView
-    private lateinit var videoTime: TextView
-    private lateinit var timelineView: TimelineView
+    private lateinit var previewContainer: FrameLayout
+    private lateinit var timelineScroll: HorizontalScrollView
+    private lateinit var timelineContent: LinearLayout
 
-    private lateinit var zoomOutButton: TextView
-    private lateinit var zoomInButton: TextView
-    private lateinit var zoomValue: TextView
+    private var aspectRatio = "9:16"
+    private var sourceType = "blank"
+    private var backgroundColor = Color.WHITE
+    private var mediaUri: String? = null
 
-    private var videoPrepared = false
-
-    private var currentZoom =
-        TimelineMetrics.DEFAULT_ZOOM
-
-    private val timeHandler =
-        Handler(Looper.getMainLooper())
-
-    private val timeUpdater =
-        object : Runnable {
-
-            override fun run() {
-
-                if (
-                    videoPrepared &&
-                    ::videoPreview.isInitialized &&
-                    videoPreview.isPlaying
-                ) {
-
-                    updateEditorPosition()
-
-                    timeHandler.postDelayed(
-                        this,
-                        100
-                    )
-                }
-            }
-        }
-
-    override fun onCreate(
-        savedInstanceState: Bundle?
-    ) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(
-            R.layout.activity_editor
+        aspectRatio =
+            intent.getStringExtra(EXTRA_ASPECT_RATIO) ?: "9:16"
+
+        sourceType =
+            intent.getStringExtra(EXTRA_SOURCE_TYPE) ?: "blank"
+
+        backgroundColor =
+            intent.getIntExtra(
+                EXTRA_BACKGROUND_COLOR,
+                Color.WHITE
+            )
+
+        mediaUri =
+            intent.getStringExtra(EXTRA_VIDEO_URI)
+
+        buildEditor()
+    }
+
+    private fun buildEditor() {
+
+        requestedOrientation =
+            android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(Color.rgb(7, 9, 16))
+        }
+
+        root.addView(
+            createTopBar(),
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                52.dp()
+            )
         )
 
-        val projectName =
-            intent.getStringExtra(
-                EXTRA_PROJECT_NAME
-            ) ?: "My Project"
-
-        val videoUriString =
-            intent.getStringExtra(
-                EXTRA_VIDEO_URI
-            )
-
-        val editorTitle =
-            findViewById<TextView>(
-                R.id.editorTitle
-            )
-
-        editorTitle.text =
-            projectName
-
-        val backButton =
-            findViewById<TextView>(
-                R.id.editorBack
-            )
-
-        backButton.setOnClickListener {
-            finish()
+        val workspace = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setBackgroundColor(Color.rgb(10, 12, 20))
         }
 
-        val saveButton =
-            findViewById<TextView>(
-                R.id.editorSave
+        workspace.addView(
+            createToolBar(left = true),
+            LinearLayout.LayoutParams(
+                62.dp(),
+                ViewGroup.LayoutParams.MATCH_PARENT
             )
-
-        saveButton.setOnClickListener {
-            saveEditorState()
-        }
-
-        videoPreview =
-            findViewById(
-                R.id.videoPreview
-            )
-
-        playButton =
-            findViewById(
-                R.id.playButton
-            )
-
-        videoTime =
-            findViewById(
-                R.id.videoTime
-            )
-
-        timelineView =
-            findViewById(
-                R.id.timelineView
-            )
-
-        zoomOutButton =
-            findViewById(
-                R.id.timelineZoomOut
-            )
-
-        zoomInButton =
-            findViewById(
-                R.id.timelineZoomIn
-            )
-
-        zoomValue =
-            findViewById(
-                R.id.timelineZoomValue
-            )
-
-        playButton.text =
-            "▶"
-
-        setupZoomControls()
-        setupTimeline()
-        setupVideo(videoUriString)
-    }
-    private fun setupZoomControls() {
-
-        updateZoomText()
-
-        zoomInButton.setOnClickListener {
-
-            currentZoom =
-                TimelineMetrics.zoomIn(
-                    currentZoom
-                )
-
-            timelineView.setZoom(
-                currentZoom
-            )
-
-            updateZoomText()
-        }
-
-        zoomOutButton.setOnClickListener {
-
-            currentZoom =
-                TimelineMetrics.zoomOut(
-                    currentZoom
-                )
-
-            timelineView.setZoom(
-                currentZoom
-            )
-
-            updateZoomText()
-        }
-    }
-
-    private fun updateZoomText() {
-
-        zoomValue.text =
-            TimelineMetrics.formatZoom(
-                currentZoom
-            )
-    }
-
-    private fun setupTimeline() {
-
-        timelineView.setZoom(
-            currentZoom
         )
 
-        timelineView.setOnPositionChangedListener {
-            position ->
+        previewContainer = FrameLayout(this).apply {
+            setBackgroundColor(Color.BLACK)
+            gravity = Gravity.CENTER
+        }
 
-            if (!videoPrepared) {
-                return@setOnPositionChangedListener
-            }
+        val previewHolder = FrameLayout(this).apply {
+            gravity = Gravity.CENTER
+        }
 
-            videoPreview.seekTo(
-                position
+        setupPreview(previewHolder)
+
+        previewContainer.addView(
+            previewHolder,
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
             )
+        )
 
-            videoTime.text =
-                "${TimelineMetrics.formatTime(position.toLong())} / " +
-                TimelineMetrics.formatTime(
-                    videoPreview.duration.toLong()
-                )
+        workspace.addView(
+            previewContainer,
+            LinearLayout.LayoutParams(
+                0,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                1f
+            )
+        )
 
-            if (videoPreview.isPlaying) {
+        workspace.addView(
+            createToolBar(left = false),
+            LinearLayout.LayoutParams(
+                62.dp(),
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
 
-                videoPreview.pause()
+        root.addView(
+            workspace,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+        )
 
-                playButton.text =
-                    "▶"
+        root.addView(
+            createTimelineArea(),
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                220.dp()
+            )
+        )
 
-                timeHandler.removeCallbacks(
-                    timeUpdater
-                )
+        setContentView(root)
+    }
+
+    private fun createTopBar(): View {
+
+        val bar = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setBackgroundColor(Color.rgb(15, 18, 30))
+            setPadding(10.dp(), 0, 10.dp(), 0)
+        }
+
+        val back = button("‹", 28).apply {
+            setOnClickListener {
+                finish()
             }
         }
+
+        bar.addView(
+            back,
+            LinearLayout.LayoutParams(
+                48.dp(),
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        val title = TextView(this).apply {
+            text = "New Project"
+            textColor = Color.WHITE
+            textSize = 16f
+            gravity = Gravity.CENTER_VERTICAL
+        }
+
+        bar.addView(
+            title,
+            LinearLayout.LayoutParams(
+                0,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                1f
+            )
+        )
+
+        val undo = button("↶", 20)
+        val redo = button("↷", 20)
+
+        bar.addView(
+            undo,
+            LinearLayout.LayoutParams(
+                48.dp(),
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        bar.addView(
+            redo,
+            LinearLayout.LayoutParams(
+                48.dp(),
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        val export = TextView(this).apply {
+            text = "EXPORT"
+            textColor = Color.WHITE
+            textSize = 13f
+            gravity = Gravity.CENTER
+            setPadding(14.dp(), 0, 14.dp(), 0)
+            background = rounded(Color.rgb(70, 80, 220), 10)
+        }
+
+        bar.addView(
+            export,
+            LinearLayout.LayoutParams(
+                90.dp(),
+                38.dp()
+            )
+        )
+
+        return bar
     }
 
-    private fun setupVideo(
-        videoUriString: String?
-    ) {
+    private fun setupPreview(holder: FrameLayout) {
 
-        if (videoUriString.isNullOrEmpty()) {
-            videoTime.text =
-                "00:00 / 00:00"
+        when (sourceType) {
 
-            return
-        }
+            "video" -> {
+                val video = VideoView(this)
 
-        val videoUri =
-            Uri.parse(
-                videoUriString
-            )
-
-        videoPreview.setVideoURI(
-            videoUri
-        )
-
-        timelineView.setVideoUri(
-            videoUri
-        )
-
-        videoPreview.setOnPreparedListener {
-
-            videoPrepared = true
-
-            val duration =
-                videoPreview.duration
-
-            timelineView.setDuration(
-                duration
-            )
-
-            timelineView.setPosition(
-                0
-            )
-
-            videoTime.text =
-                "${TimelineMetrics.formatTime(0L)} / " +
-                TimelineMetrics.formatTime(
-                    duration.toLong()
-                )
-
-            playButton.text =
-                "▶"
-
-            videoPreview.seekTo(
-                0
-            )
-        }
-
-        videoPreview.setOnCompletionListener {
-
-            playButton.text =
-                "▶"
-
-            timelineView.setPosition(
-                videoPreview.duration
-            )
-
-            updateEditorPosition()
-
-            timeHandler.removeCallbacks(
-                timeUpdater
-            )
-        }
-
-        videoPreview.setOnErrorListener {
-                _, _, _ ->
-
-            videoPrepared = false
-
-            playButton.text =
-                "▶"
-
-            videoTime.text =
-                "Video could not be played"
-
-            timeHandler.removeCallbacks(
-                timeUpdater
-            )
-
-            true
-        }
-
-        playButton.setOnClickListener {
-
-            if (!videoPrepared) {
-                return@setOnClickListener
-            }
-
-            if (
-                videoPreview.isPlaying
-            ) {
-
-                videoPreview.pause()
-
-                playButton.text =
-                    "▶"
-
-                timeHandler.removeCallbacks(
-                    timeUpdater
-                )
-
-                updateEditorPosition()
-
-            } else {
-
-                if (
-                    videoPreview.duration > 0 &&
-                    videoPreview.currentPosition >=
-                    videoPreview.duration
-                ) {
-
-                    videoPreview.seekTo(
-                        0
-                    )
-
-                    timelineView.setPosition(
-                        0
-                    )
+                if (!mediaUri.isNullOrEmpty()) {
+                    video.setVideoURI(Uri.parse(mediaUri))
                 }
 
-                videoPreview.start()
+                holder.addView(
+                    video,
+                    centeredPreviewParams()
+                )
+            }
 
-                playButton.text =
-                    "Ⅱ"
+            "image" -> {
+                val image = ImageView(this).apply {
+                    setImageURI(
+                        Uri.parse(mediaUri)
+                    )
+                    scaleType =
+                        ImageView.ScaleType.FIT_CENTER
+                }
 
-                timeHandler.removeCallbacks(
-                    timeUpdater
+                holder.addView(
+                    image,
+                    centeredPreviewParams()
+                )
+            }
+
+            else -> {
+                holder.setBackgroundColor(
+                    backgroundColor
                 )
 
-                timeHandler.post(
-                    timeUpdater
+                val text = TextView(this).apply {
+                    text = aspectRatio
+                    textColor = Color.GRAY
+                    textSize = 13f
+                    gravity = Gravity.CENTER
+                }
+
+                holder.addView(
+                    text,
+                    centeredPreviewParams()
                 )
             }
         }
     }
-    private fun updateEditorPosition() {
 
-        if (!videoPrepared) {
-            return
-        }
+    private fun centeredPreviewParams():
+        FrameLayout.LayoutParams {
 
-        val position =
-            videoPreview.currentPosition
-
-        val duration =
-            videoPreview.duration
-
-        videoTime.text =
-            "${TimelineMetrics.formatTime(position.toLong())} / " +
-            TimelineMetrics.formatTime(
-                duration.toLong()
+        val params =
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
             )
 
-        timelineView.setPosition(
-            position
+        params.gravity = Gravity.CENTER
+
+        return params
+    }
+
+    private fun createToolBar(left: Boolean): View {
+
+        val bar = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setBackgroundColor(Color.rgb(13, 16, 27))
+            setPadding(5.dp(), 8.dp(), 5.dp(), 8.dp())
+        }
+
+        if (left) {
+
+            addTool(bar, "Media")
+            addTool(bar, "Layer")
+            addTool(bar, "Text")
+            addTool(bar, "Audio")
+            addTool(bar, "Voice")
+
+        } else {
+
+            addTool(bar, "Crop")
+            addTool(bar, "Speed")
+            addTool(bar, "Filter")
+            addTool(bar, "Effect")
+            addTool(bar, "More")
+        }
+
+        return bar
+    }
+
+    private fun addTool(
+        parent: LinearLayout,
+        name: String
+    ) {
+
+        val item = TextView(this).apply {
+            text = name
+            textColor = Color.WHITE
+            textSize = 10f
+            gravity = Gravity.CENTER
+            background =
+                rounded(
+                    Color.rgb(24, 28, 43),
+                    8
+                )
+        }
+
+        val params =
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                48.dp()
+            )
+
+        params.setMargins(
+            2.dp(),
+            4.dp(),
+            2.dp(),
+            4.dp()
+        )
+
+        parent.addView(item, params)
+    }
+
+    private fun createTimelineArea(): View {
+
+        val area = FrameLayout(this).apply {
+            setBackgroundColor(
+                Color.rgb(12, 15, 25)
+            )
+        }
+
+        val header = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setBackgroundColor(
+                Color.rgb(18, 22, 35)
+            )
+        }
+
+        val zoomOut = button("−", 20)
+        val zoomText = TextView(this).apply {
+            text = "100%"
+            textColor = Color.WHITE
+            gravity = Gravity.CENTER
+            textSize = 11f
+        }
+        val zoomIn = button("+", 20)
+
+        header.addView(
+            zoomOut,
+            LinearLayout.LayoutParams(
+                45.dp(),
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        header.addView(
+            zoomText,
+            LinearLayout.LayoutParams(
+                60.dp(),
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        header.addView(
+            zoomIn,
+            LinearLayout.LayoutParams(
+                45.dp(),
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        area.addView(
+            header,
+            FrameLayout.LayoutParams(
+                150.dp(),
+                40.dp()
+            )
+        )
+
+        timelineScroll =
+            HorizontalScrollView(this).apply {
+                isHorizontalScrollBarEnabled = false
+                setBackgroundColor(
+                    Color.rgb(9, 12, 20)
+                )
+            }
+
+        timelineContent =
+            LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(
+                    180.dp(),
+                    8.dp(),
+                    180.dp(),
+                    8.dp()
+                )
+            }
+
+        addTimelineTrack(
+            "VIDEO",
+            Color.rgb(45, 75, 125)
+        )
+
+        addTimelineTrack(
+            "TEXT",
+            Color.rgb(80, 55, 105)
+        )
+
+        addTimelineTrack(
+            "AUDIO",
+            Color.rgb(45, 105, 75)
+        )
+
+        timelineScroll.addView(
+            timelineContent,
+            ViewGroup.LayoutParams(
+                1800.dp(),
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        val scrollParams =
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+
+        scrollParams.topMargin = 40.dp()
+
+        area.addView(
+            timelineScroll,
+            scrollParams
+        )
+
+        val playhead = View(this).apply {
+            setBackgroundColor(Color.RED)
+        }
+
+        val playheadParams =
+            FrameLayout.LayoutParams(
+                2.dp(),
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+
+        playheadParams.gravity = Gravity.CENTER_HORIZONTAL
+        playheadParams.topMargin = 40.dp()
+
+        area.addView(
+            playhead,
+            playheadParams
+        )
+
+        zoomOut.setOnClickListener {
+            zoomText.text = "75%"
+        }
+
+        zoomIn.setOnClickListener {
+            zoomText.text = "125%"
+        }
+
+        return area
+    }
+
+    private fun addTimelineTrack(
+        name: String,
+        color: Int
+    ) {
+
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+
+        val label = TextView(this).apply {
+            text = name
+            textColor = Color.WHITE
+            textSize = 10f
+            gravity = Gravity.CENTER
+            background =
+                rounded(
+                    Color.rgb(25, 29, 42),
+                    6
+                )
+        }
+
+        row.addView(
+            label,
+            LinearLayout.LayoutParams(
+                80.dp(),
+                48.dp()
+            )
+        )
+
+        val clip = TextView(this).apply {
+            text =
+                if (name == "VIDEO")
+                    "  Video Clip  "
+                else
+                    "  $name Track  "
+
+            textColor = Color.WHITE
+            textSize = 12f
+            gravity = Gravity.CENTER_VERTICAL
+            background =
+                rounded(color, 8)
+        }
+
+        val clipParams =
+            LinearLayout.LayoutParams(
+                520.dp(),
+                48.dp()
+            )
+
+        clipParams.setMargins(
+            12.dp(),
+            0,
+            0,
+            0
+        )
+
+        row.addView(
+            clip,
+            clipParams
+        )
+
+        val params =
+            LinearLayout.LayoutParams(
+                1800.dp(),
+                52.dp()
+            )
+
+        timelineContent.addView(
+            row,
+            params
         )
     }
 
-    private fun saveEditorState() {
+    private fun button(
+        textValue: String,
+        size: Int
+    ): TextView {
 
-        if (!videoPrepared) {
-            return
-        }
-
-        timelineView.setPosition(
-            videoPreview.currentPosition
-        )
-
-        videoTime.text =
-            "${TimelineMetrics.formatTime(
-                videoPreview.currentPosition.toLong()
-            )} / " +
-            TimelineMetrics.formatTime(
-                videoPreview.duration.toLong()
-            )
-    }
-
-    override fun onPause() {
-
-        super.onPause()
-
-        if (
-            ::videoPreview.isInitialized &&
-            videoPreview.isPlaying
-        ) {
-
-            videoPreview.pause()
-
-            playButton.text =
-                "▶"
-
-            timeHandler.removeCallbacks(
-                timeUpdater
-            )
-
-            updateEditorPosition()
+        return TextView(this).apply {
+            text = textValue
+            textColor = Color.WHITE
+            textSize = size.toFloat()
+            gravity = Gravity.CENTER
         }
     }
 
-    override fun onDestroy() {
+    private fun rounded(
+        color: Int,
+        radius: Int
+    ): GradientDrawable {
 
-        timeHandler.removeCallbacks(
-            timeUpdater
-        )
-
-        if (
-            ::videoPreview.isInitialized
-        ) {
-
-            videoPreview.stopPlayback()
+        return GradientDrawable().apply {
+            setColor(color)
+            cornerRadius =
+                radius.dp().toFloat()
         }
+    }
 
-        if (
-            ::timelineView.isInitialized
-        ) {
-
-            timelineView.clearThumbnails()
-        }
-
-        super.onDestroy()
+    private fun Int.dp(): Int {
+        return (
+            this *
+                resources.displayMetrics.density
+        ).toInt()
     }
 }
