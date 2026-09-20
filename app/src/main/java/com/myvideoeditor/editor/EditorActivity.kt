@@ -122,17 +122,17 @@ class EditorActivity : Activity() {
 
         zoomOutButton =
             findViewById(
-                R.id.zoomOutButton
+                R.id.timelineZoomOut
             )
 
         zoomInButton =
             findViewById(
-                R.id.zoomInButton
+                R.id.timelineZoomIn
             )
 
         zoomValue =
             findViewById(
-                R.id.zoomValue
+                R.id.timelineZoomValue
             )
 
         playButton.text =
