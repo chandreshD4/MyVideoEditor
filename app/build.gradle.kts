@@ -14,3 +14,7 @@ android {
         versionName = "0.1"
     }
 }
+
+dependencies {
+    implementation("androidx.recyclerview:recyclerview:1.4.0")
+}
