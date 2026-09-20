@@ -12,529 +12,585 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import kotlin.math.max
-import kotlin.math.roundToInt
+import kotlin.math.min
 
 class TimelineView @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null
-) : View(context, attrs) {
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : View(context, attrs, defStyleAttr) {
 
-    private val rulerPaint =
-        Paint(Paint.ANTI_ALIAS_FLAG)
+    companion object {
+        private const val RULER_HEIGHT = 34
+        private const val VIDEO_TRACK_HEIGHT = 82
+        private const val TEXT_TRACK_HEIGHT = 44
+        private const val AUDIO_TRACK_HEIGHT = 58
 
-    private val textPaint =
-        Paint(Paint.ANTI_ALIAS_FLAG)
+        private const val CORNER_RADIUS = 8f
+        private const val PLAYHEAD_WIDTH = 2f
 
-    private val trackPaint =
-        Paint(Paint.ANTI_ALIAS_FLAG)
-
-    private val trackBorderPaint =
-        Paint(Paint.ANTI_ALIAS_FLAG)
-
-    private val playheadPaint =
-        Paint(Paint.ANTI_ALIAS_FLAG)
-
-    private val thumbnailPaint =
-        Paint(Paint.ANTI_ALIAS_FLAG)
-
-    private var durationMs = 0
-    private var positionMs = 0
-
-    private var pixelsPerSecond = 35f
+        private const val MAX_THUMBNAILS = 120
+    }
 
     private var videoUri: Uri? = null
 
-    private val thumbnails =
+    private var durationMs: Int = 0
+    private var positionMs: Int = 0
+
+    private var zoom: Float =
+        TimelineMetrics.DEFAULT_ZOOM
+
+    private var thumbnails =
         mutableListOf<Bitmap>()
+
+    private var thumbnailTimes =
+        mutableListOf<Long>()
 
     private var thumbnailGeneration = 0
 
-    private var onPositionChanged:
+    private var isDraggingPlayhead = false
+
+    private var onPositionChangedListener:
         ((Int) -> Unit)? = null
 
+    private val rulerPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(185, 190, 205)
+            strokeWidth = 1f
+        }
+
+    private val rulerTextPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(220, 224, 235)
+            textSize = 11f
+            isAntiAlias = true
+        }
+
+    private val trackPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(20, 24, 38)
+            isAntiAlias = true
+        }
+
+    private val videoBorderPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(70, 76, 96)
+            style = Paint.Style.STROKE
+            strokeWidth = 1.5f
+            isAntiAlias = true
+        }
+
+    private val textTrackPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(38, 43, 62)
+            isAntiAlias = true
+        }
+
+    private val audioTrackPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(29, 35, 52)
+            isAntiAlias = true
+        }
+
+    private val playheadPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            strokeWidth = PLAYHEAD_WIDTH
+            isAntiAlias = true
+        }
+
+    private val playheadHandlePaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            isAntiAlias = true
+        }
+
+    private val waveformPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(110, 170, 255)
+            strokeWidth = 2f
+            isAntiAlias = true
+        }
+
+    private val thumbnailDestination =
+        RectF()
+
     init {
-
+        isFocusable = true
         setBackgroundColor(
-            Color.rgb(
-                10,
-                16,
-                41
-            )
+            Color.rgb(8, 11, 22)
         )
-
-        rulerPaint.color =
-            Color.rgb(
-                120,
-                130,
-                180
-            )
-
-        rulerPaint.strokeWidth = 2f
-
-        textPaint.color =
-            Color.WHITE
-
-        textPaint.textSize = 22f
-
-        trackPaint.color =
-            Color.rgb(
-                24,
-                38,
-                79
-            )
-
-        trackBorderPaint.color =
-            Color.rgb(
-                124,
-                0,
-                255
-            )
-
-        trackBorderPaint.style =
-            Paint.Style.STROKE
-
-        trackBorderPaint.strokeWidth = 3f
-
-        thumbnailPaint.isFilterBitmap = true
-
-        playheadPaint.color =
-            Color.rgb(
-                255,
-                30,
-                150
-            )
-
-        playheadPaint.strokeWidth = 4f
-
-        isClickable = true
     }
 
-    fun setVideoUri(uri: Uri) {
-
+    fun setVideoUri(uri: Uri?) {
         videoUri = uri
+        clearThumbnails()
 
-        thumbnailGeneration++
+        if (uri != null && durationMs > 0) {
+            loadThumbnails()
+        }
+
+        invalidate()
+    }
+
+    fun setDuration(duration: Int) {
+        durationMs =
+            duration.coerceAtLeast(0)
+
+        positionMs =
+            TimelineMetrics.clampPosition(
+                positionMs,
+                durationMs
+            )
 
         clearThumbnails()
 
-        invalidate()
-
-        if (durationMs > 0) {
+        if (videoUri != null && durationMs > 0) {
             loadThumbnails()
         }
-    }
-
-    fun setDuration(
-        duration: Int
-    ) {
-
-        durationMs =
-            max(
-                duration,
-                0
-            )
 
         requestLayout()
-
         invalidate()
-
-        if (
-            videoUri != null &&
-            durationMs > 0
-        ) {
-            loadThumbnails()
-        }
     }
 
-    fun setPosition(
-        position: Int
-    ) {
-
+    fun setPosition(position: Int) {
         positionMs =
-            position.coerceIn(
-                0,
+            TimelineMetrics.clampPosition(
+                position,
                 durationMs
             )
 
         invalidate()
     }
 
-    fun setOnPositionChangedListener(
-        listener: (Int) -> Unit
-    ) {
-
-        onPositionChanged = listener
+    fun getPosition(): Int {
+        return positionMs
     }
 
+    fun getDuration(): Int {
+        return durationMs
+    }
+
+    fun setZoom(value: Float) {
+        zoom =
+            TimelineMetrics.clampZoom(value)
+
+        requestLayout()
+        invalidate()
+    }
+
+    fun getZoom(): Float {
+        return zoom
+    }
+
+    fun zoomIn() {
+        setZoom(
+            TimelineMetrics.zoomIn(zoom)
+        )
+    }
+
+    fun zoomOut() {
+        setZoom(
+            TimelineMetrics.zoomOut(zoom)
+        )
+    }
+
+    fun setOnPositionChangedListener(
+        listener: ((Int) -> Unit)?
+    ) {
+        onPositionChangedListener = listener
+    }
+
+    fun clearThumbnails() {
+        thumbnailGeneration++
+
+        thumbnails.forEach { bitmap ->
+            if (!bitmap.isRecycled) {
+                bitmap.recycle()
+            }
+        }
+
+        thumbnails.clear()
+        thumbnailTimes.clear()
+    }
     override fun onMeasure(
         widthMeasureSpec: Int,
         heightMeasureSpec: Int
     ) {
-
-        val durationSeconds =
-            max(
-                durationMs / 1000f,
-                10f
-            )
+        val contentWidth =
+            TimelineMetrics.contentWidth(
+                durationMs,
+                zoom
+            ) +
+            TimelineMetrics.timelinePadding(
+                zoom
+            ) * 2
 
         val desiredWidth =
-            (
-                durationSeconds *
-                    pixelsPerSecond +
-                    80f
-            ).toInt()
+            max(
+                320,
+                contentWidth
+            )
 
-        val width =
+        val desiredHeight =
+            RULER_HEIGHT +
+            VIDEO_TRACK_HEIGHT +
+            TEXT_TRACK_HEIGHT +
+            AUDIO_TRACK_HEIGHT
+
+        val measuredWidth =
             resolveSize(
                 desiredWidth,
                 widthMeasureSpec
             )
 
-        val height =
+        val measuredHeight =
             resolveSize(
-                210,
+                desiredHeight,
                 heightMeasureSpec
             )
 
         setMeasuredDimension(
-            width,
-            height
+            measuredWidth,
+            measuredHeight
         )
     }
 
-    override fun onDraw(
-        canvas: Canvas
-    ) {
-
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        val width =
-            measuredWidth.toFloat()
+        val padding =
+            TimelineMetrics.timelinePadding(
+                zoom
+            )
 
-        val height =
-            measuredHeight.toFloat()
-
-        drawRuler(
-            canvas,
-            width
+        canvas.save()
+        canvas.translate(
+            padding.toFloat(),
+            0f
         )
 
-        drawVideoTrack(
-            canvas,
-            width
-        )
+        drawRuler(canvas)
+        drawVideoTrack(canvas)
+        drawTextTrack(canvas)
+        drawAudioTrack(canvas)
+        drawPlayhead(canvas)
 
-        drawAudioTrack(
-            canvas,
-            width
-        )
-
-        drawPlayhead(
-            canvas,
-            height
-        )
+        canvas.restore()
     }
 
     private fun drawRuler(
-        canvas: Canvas,
-        width: Float
+        canvas: Canvas
     ) {
+        val width =
+            TimelineMetrics.contentWidth(
+                durationMs,
+                zoom
+            )
 
-        val rulerY = 38f
-
-        canvas.drawLine(
+        canvas.drawRect(
             0f,
-            rulerY,
-            width,
-            rulerY,
-            rulerPaint
+            0f,
+            width.toFloat(),
+            RULER_HEIGHT.toFloat(),
+            trackPaint
         )
 
         val totalSeconds =
-            max(
-                durationMs / 1000,
-                10
+            TimelineMetrics.durationSeconds(
+                durationMs
             )
 
-        for (
-            second in 0..totalSeconds
-        ) {
+        for (second in 0..totalSeconds) {
 
             val x =
-                20f +
-                    second *
-                    pixelsPerSecond
+                TimelineMetrics.secondToX(
+                    second.toFloat(),
+                    zoom
+                )
 
-            if (x > width) {
-                break
-            }
+            if (
+                TimelineMetrics.isMajorSecond(
+                    second,
+                    zoom
+                )
+            ) {
 
-            val isMajor =
-                second % 5 == 0
+                canvas.drawLine(
+                    x,
+                    17f,
+                    x,
+                    RULER_HEIGHT.toFloat(),
+                    rulerPaint
+                )
 
-            val tickHeight =
-                if (isMajor) {
-                    18f
-                } else {
-                    9f
-                }
-
-            canvas.drawLine(
-                x,
-                rulerY,
-                x,
-                rulerY + tickHeight,
-                rulerPaint
-            )
-
-            if (isMajor) {
+                val label =
+                    TimelineMetrics.formatTime(
+                        second * 1000L
+                    )
 
                 canvas.drawText(
-                    formatTime(
-                        second * 1000
-                    ),
+                    label,
                     x + 4f,
-                    24f,
-                    textPaint
+                    13f,
+                    rulerTextPaint
+                )
+
+            } else if (
+                TimelineMetrics.isMinorSecond(
+                    second,
+                    zoom
+                )
+            ) {
+
+                canvas.drawLine(
+                    x,
+                    23f,
+                    x,
+                    RULER_HEIGHT.toFloat(),
+                    rulerPaint
                 )
             }
         }
     }
 
     private fun drawVideoTrack(
-        canvas: Canvas,
-        width: Float
+        canvas: Canvas
     ) {
+        val top =
+            RULER_HEIGHT.toFloat()
 
-        val top = 55f
-        val bottom = 120f
-        val left = 10f
+        val bottom =
+            top +
+            VIDEO_TRACK_HEIGHT
 
-        val right =
-            max(
-                width - 10f,
-                100f
-            )
-
-        val rect =
-            RectF(
-                left,
-                top,
-                right,
-                bottom
+        val width =
+            TimelineMetrics.contentWidth(
+                durationMs,
+                zoom
             )
 
         canvas.drawRoundRect(
-            rect,
-            14f,
-            14f,
+            0f,
+            top,
+            width.toFloat(),
+            bottom,
+            CORNER_RADIUS,
+            CORNER_RADIUS,
             trackPaint
         )
 
-        if (thumbnails.isNotEmpty()) {
-
-            val thumbnailWidth =
-                (right - left) /
-                    thumbnails.size
-
-            for (
-                index in thumbnails.indices
-            ) {
-
-                val bitmap =
-                    thumbnails[index]
-
-                if (bitmap.isRecycled) {
-                    continue
-                }
-
-                val thumbLeft =
-                    left +
-                        index *
-                        thumbnailWidth
-
-                val thumbRight =
-                    if (
-                        index ==
-                        thumbnails.lastIndex
-                    ) {
-                        right
-                    } else {
-                        thumbLeft +
-                            thumbnailWidth
-                    }
-
-                val destination =
-                    RectF(
-                        thumbLeft + 2f,
-                        top + 2f,
-                        thumbRight - 2f,
-                        bottom - 2f
-                    )
-
-                canvas.drawBitmap(
-                    bitmap,
-                    null,
-                    destination,
-                    thumbnailPaint
-                )
-            }
-
-        } else {
-
-            val clipWidth = 70f
-            var x = 15f
-
-            while (
-                x < right - 5f
-            ) {
-
-                val clipRight =
-                    minOf(
-                        x + clipWidth,
-                        right - 5f
-                    )
-
-                val clipRect =
-                    RectF(
-                        x,
-                        top + 5f,
-                        clipRight,
-                        bottom - 5f
-                    )
-
-                canvas.drawRoundRect(
-                    clipRect,
-                    8f,
-                    8f,
-                    trackBorderPaint
-                )
-
-                x +=
-                    clipWidth + 5f
-            }
-        }
-
-        canvas.drawRoundRect(
-            rect,
-            14f,
-            14f,
-            trackBorderPaint
+        drawThumbnails(
+            canvas,
+            top,
+            bottom
         )
 
-        val labelPaint =
-            Paint(Paint.ANTI_ALIAS_FLAG)
+        canvas.drawRoundRect(
+            0f,
+            top,
+            width.toFloat(),
+            bottom,
+            CORNER_RADIUS,
+            CORNER_RADIUS,
+            videoBorderPaint
+        )
+    }
 
-        labelPaint.color =
-            Color.argb(
-                190,
-                0,
-                0,
-                0
-            )
+    private fun drawTextTrack(
+        canvas: Canvas
+    ) {
+        val top =
+            (
+                RULER_HEIGHT +
+                VIDEO_TRACK_HEIGHT
+            ).toFloat()
 
-        val labelRect =
-            RectF(
-                16f,
-                top + 8f,
-                100f,
-                top + 32f
+        val bottom =
+            top +
+            TEXT_TRACK_HEIGHT
+
+        val width =
+            TimelineMetrics.contentWidth(
+                durationMs,
+                zoom
             )
 
         canvas.drawRoundRect(
-            labelRect,
-            8f,
-            8f,
-            labelPaint
+            0f,
+            top,
+            width.toFloat(),
+            bottom,
+            CORNER_RADIUS,
+            CORNER_RADIUS,
+            textTrackPaint
         )
-
-        textPaint.textSize = 16f
-
-        canvas.drawText(
-            "VIDEO",
-            28f,
-            top + 25f,
-            textPaint
-        )
-
-        textPaint.textSize = 22f
     }
 
     private fun drawAudioTrack(
-        canvas: Canvas,
-        width: Float
+        canvas: Canvas
     ) {
+        val top =
+            (
+                RULER_HEIGHT +
+                VIDEO_TRACK_HEIGHT +
+                TEXT_TRACK_HEIGHT
+            ).toFloat()
 
-        val top = 130f
-        val bottom = 195f
-        val left = 10f
+        val bottom =
+            top +
+            AUDIO_TRACK_HEIGHT
 
-        val right =
-            max(
-                width - 10f,
-                100f
+        val width =
+            TimelineMetrics.contentWidth(
+                durationMs,
+                zoom
             )
 
-        val rect =
-            RectF(
-                left,
+        canvas.drawRoundRect(
+            0f,
+            top,
+            width.toFloat(),
+            bottom,
+            CORNER_RADIUS,
+            CORNER_RADIUS,
+            audioTrackPaint
+        )
+
+        drawPlaceholderWaveform(
+            canvas,
+            top,
+            bottom,
+            width
+        )
+    }
+    private fun drawThumbnails(
+        canvas: Canvas,
+        top: Float,
+        bottom: Float
+    ) {
+        if (thumbnails.isEmpty()) {
+            return
+        }
+
+        val trackHeight =
+            bottom - top
+
+        val thumbnailWidth =
+            TimelineMetrics.thumbnailWidth(
+                zoom
+            ).toFloat()
+
+        for (index in thumbnails.indices) {
+
+            val bitmap =
+                thumbnails[index]
+
+            if (bitmap.isRecycled) {
+                continue
+            }
+
+            val timeMs =
+                thumbnailTimes.getOrNull(index)
+                    ?: continue
+
+            val x =
+                TimelineMetrics.secondToX(
+                    timeMs / 1000f,
+                    zoom
+                )
+
+            thumbnailDestination.set(
+                x,
                 top,
-                right,
+                x + thumbnailWidth,
                 bottom
             )
 
-        canvas.drawRoundRect(
-            rect,
-            14f,
-            14f,
-            trackPaint
-        )
+            canvas.drawBitmap(
+                bitmap,
+                null,
+                thumbnailDestination,
+                null
+            )
+        }
+    }
 
-        canvas.drawRoundRect(
-            rect,
-            14f,
-            14f,
-            trackBorderPaint
-        )
+    private fun drawPlaceholderWaveform(
+        canvas: Canvas,
+        top: Float,
+        bottom: Float,
+        width: Int
+    ) {
+        if (width <= 0) {
+            return
+        }
 
-        textPaint.textSize = 18f
+        val centerY =
+            (top + bottom) / 2f
 
-        canvas.drawText(
-            "AUDIO",
-            28f,
-            top + 40f,
-            textPaint
-        )
+        val amplitude =
+            (bottom - top) * 0.32f
 
-        textPaint.textSize = 22f
+        val step =
+            12f
+
+        var x = 0f
+
+        while (x < width) {
+
+            val normalized =
+                kotlin.math.sin(
+                    x * 0.075f
+                ).toFloat()
+
+            val height =
+                amplitude *
+                (0.25f +
+                    kotlin.math.abs(
+                        normalized
+                    ) * 0.75f)
+
+            canvas.drawLine(
+                x,
+                centerY - height,
+                x,
+                centerY + height,
+                waveformPaint
+            )
+
+            x += step
+        }
     }
 
     private fun drawPlayhead(
-        canvas: Canvas,
-        height: Float
+        canvas: Canvas
     ) {
-
-        val seconds =
-            positionMs / 1000f
-
         val x =
-            20f +
-                seconds *
-                pixelsPerSecond
+            TimelineMetrics.playheadX(
+                positionMs,
+                zoom
+            )
+
+        val totalHeight =
+            RULER_HEIGHT +
+            VIDEO_TRACK_HEIGHT +
+            TEXT_TRACK_HEIGHT +
+            AUDIO_TRACK_HEIGHT
 
         canvas.drawLine(
             x,
             0f,
             x,
-            height,
+            totalHeight.toFloat(),
             playheadPaint
         )
 
         canvas.drawCircle(
             x,
-            5f,
-            8f,
-            playheadPaint
+            6f,
+            6f,
+            playheadHandlePaint
         )
     }
 
@@ -543,24 +599,31 @@ class TimelineView @JvmOverloads constructor(
         val uri =
             videoUri ?: return
 
-        if (durationMs <= 0) {
+        val duration =
+            durationMs
+
+        if (duration <= 0) {
             return
         }
 
         val generation =
-            thumbnailGeneration
+            thumbnailGeneration + 1
 
-        clearThumbnails()
+        thumbnailGeneration =
+            generation
 
-        invalidate()
+        val count =
+            TimelineMetrics.thumbnailCount(
+                duration,
+                zoom
+            ).coerceAtMost(
+                MAX_THUMBNAILS
+            )
 
         Thread {
 
             val retriever =
                 MediaMetadataRetriever()
-
-            val loaded =
-                mutableListOf<Bitmap>()
 
             try {
 
@@ -569,11 +632,13 @@ class TimelineView @JvmOverloads constructor(
                     uri
                 )
 
-                val count = 12
+                val localBitmaps =
+                    mutableListOf<Bitmap>()
 
-                for (
-                    index in 0 until count
-                ) {
+                val localTimes =
+                    mutableListOf<Long>()
+
+                for (index in 0 until count) {
 
                     if (
                         generation !=
@@ -582,223 +647,196 @@ class TimelineView @JvmOverloads constructor(
                         break
                     }
 
-                    val fraction =
-                        if (count == 1) {
-                            0f
-                        } else {
-                            index.toFloat() /
-                                (count - 1).toFloat()
-                        }
-
                     val timeMs =
-                        (
-                            durationMs *
-                                fraction
-                        ).toLong()
-                            .coerceAtMost(
-                                max(
-                                    durationMs - 1,
-                                    0
-                                ).toLong()
-                            )
+                        TimelineMetrics.thumbnailTimeMs(
+                            index,
+                            duration,
+                            zoom
+                        )
 
-                    val frame =
+                    val bitmap =
                         retriever.getFrameAtTime(
                             timeMs * 1000L,
                             MediaMetadataRetriever
                                 .OPTION_CLOSEST_SYNC
                         )
 
-                    if (frame != null) {
+                    if (bitmap != null) {
 
-                        val thumbnail =
+                        val scaled =
                             createThumbnail(
-                                frame,
-                                120,
-                                60
+                                bitmap
                             )
 
-                        loaded.add(
-                            thumbnail
+                        if (
+                            !bitmap.isRecycled &&
+                            bitmap !== scaled
+                        ) {
+                            bitmap.recycle()
+                        }
+
+                        localBitmaps.add(
+                            scaled
+                        )
+
+                        localTimes.add(
+                            timeMs
                         )
                     }
                 }
 
-            } catch (_: Exception) {
+                retriever.release()
 
-                loaded.forEach {
+                post {
 
-                    if (!it.isRecycled) {
-                        it.recycle()
+                    if (
+                        generation !=
+                        thumbnailGeneration
+                    ) {
+                        localBitmaps.forEach {
+                            if (!it.isRecycled) {
+                                it.recycle()
+                            }
+                        }
+                        return@post
                     }
+
+                    thumbnails.clear()
+                    thumbnailTimes.clear()
+
+                    thumbnails.addAll(
+                        localBitmaps
+                    )
+
+                    thumbnailTimes.addAll(
+                        localTimes
+                    )
+
+                    invalidate()
                 }
 
-                loaded.clear()
-
-            } finally {
+            } catch (_: Exception) {
 
                 try {
                     retriever.release()
                 } catch (_: Exception) {
                 }
-            }
 
-            post {
-
-                if (
-                    generation !=
-                    thumbnailGeneration
-                ) {
-
-                    loaded.forEach {
-
-                        if (!it.isRecycled) {
-                            it.recycle()
-                        }
-                    }
-
-                    return@post
+                post {
+                    invalidate()
                 }
-
-                clearThumbnails()
-
-                thumbnails.addAll(
-                    loaded
-                )
-
-                invalidate()
             }
 
         }.start()
     }
 
     private fun createThumbnail(
-        source: Bitmap,
-        targetWidth: Int,
-        targetHeight: Int
+        source: Bitmap
     ): Bitmap {
 
-        val scale =
-            max(
-                targetWidth.toFloat() /
-                    source.width.toFloat(),
+        val targetWidth =
+            TimelineMetrics.thumbnailWidth(
+                zoom
+            )
 
-                targetHeight.toFloat() /
+        val targetHeight =
+            VIDEO_TRACK_HEIGHT
+
+        val sourceRatio =
+            source.width.toFloat() /
                     source.height.toFloat()
-            )
 
-        val scaledWidth =
-            (
-                source.width *
-                    scale
-            ).roundToInt()
+        val targetRatio =
+            targetWidth.toFloat() /
+                    targetHeight.toFloat()
 
-        val scaledHeight =
-            (
-                source.height *
-                    scale
-            ).roundToInt()
+        val cropWidth: Int
+        val cropHeight: Int
 
-        val scaled =
-            Bitmap.createScaledBitmap(
-                source,
-                scaledWidth,
-                scaledHeight,
-                true
-            )
+        if (sourceRatio > targetRatio) {
 
-        if (scaled !== source) {
-            source.recycle()
+            cropHeight =
+                source.height
+
+            cropWidth =
+                (
+                    source.height *
+                    targetRatio
+                ).toInt()
+                    .coerceAtMost(
+                        source.width
+                    )
+
+        } else {
+
+            cropWidth =
+                source.width
+
+            cropHeight =
+                (
+                    source.width /
+                    targetRatio
+                ).toInt()
+                    .coerceAtMost(
+                        source.height
+                    )
         }
 
         val left =
-            max(
-                (scaledWidth -
-                    targetWidth) / 2,
-                0
-            )
+            (source.width - cropWidth) / 2
 
         val top =
-            max(
-                (scaledHeight -
-                    targetHeight) / 2,
-                0
-            )
+            (source.height - cropHeight) / 2
 
-        val cropWidth =
-            minOf(
-                targetWidth,
-                scaledWidth
-            )
-
-        val cropHeight =
-            minOf(
-                targetHeight,
-                scaledHeight
-            )
-
-        val result =
-            Bitmap.createBitmap(
-                scaled,
-                left,
-                top,
-                cropWidth,
-                cropHeight
-            )
-
-        if (result !== scaled) {
-            scaled.recycle()
-        }
-
-        return result
+        return Bitmap.createBitmap(
+            source,
+            left,
+            top,
+            cropWidth,
+            cropHeight
+        )
     }
-
-    private fun clearThumbnails() {
-
-        thumbnails.forEach {
-
-            if (!it.isRecycled) {
-                it.recycle()
-            }
-        }
-
-        thumbnails.clear()
-    }
-
     override fun onTouchEvent(
         event: MotionEvent
     ): Boolean {
 
-        when (event.action) {
+        when (event.actionMasked) {
 
-            MotionEvent.ACTION_DOWN,
-            MotionEvent.ACTION_MOVE,
-            MotionEvent.ACTION_UP -> {
+            MotionEvent.ACTION_DOWN -> {
 
-                val seconds =
-                    (
-                        event.x - 20f
-                    ) / pixelsPerSecond
+                isDraggingPlayhead = true
 
-                val newPosition =
-                    (
-                        seconds * 1000f
-                    ).toInt()
-
-                val safePosition =
-                    newPosition.coerceIn(
-                        0,
-                        durationMs
-                    )
-
-                positionMs =
-                    safePosition
-
-                onPositionChanged?.invoke(
-                    safePosition
+                updatePositionFromTouch(
+                    event.x
                 )
 
-                invalidate()
+                parent.requestDisallowInterceptTouchEvent(
+                    true
+                )
+
+                return true
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+
+                if (isDraggingPlayhead) {
+
+                    updatePositionFromTouch(
+                        event.x
+                    )
+                }
+
+                return true
+            }
+
+            MotionEvent.ACTION_UP,
+            MotionEvent.ACTION_CANCEL -> {
+
+                isDraggingPlayhead = false
+
+                parent.requestDisallowInterceptTouchEvent(
+                    false
+                )
 
                 return true
             }
@@ -807,23 +845,43 @@ class TimelineView @JvmOverloads constructor(
         return true
     }
 
-    private fun formatTime(
-        milliseconds: Int
-    ): String {
+    private fun updatePositionFromTouch(
+        touchX: Float
+    ) {
+        val padding =
+            TimelineMetrics.timelinePadding(
+                zoom
+            )
 
-        val totalSeconds =
-            milliseconds / 1000
+        val timelineX =
+            (
+                touchX - padding
+            ).coerceAtLeast(0f)
 
-        val minutes =
-            totalSeconds / 60
+        val position =
+            TimelineMetrics.positionFromX(
+                timelineX,
+                zoom
+            )
 
-        val seconds =
-            totalSeconds % 60
+        val clamped =
+            TimelineMetrics.clampPosition(
+                position,
+                durationMs
+            )
 
-        return String.format(
-            "%02d:%02d",
-            minutes,
-            seconds
+        positionMs =
+            clamped
+
+        onPositionChangedListener?.invoke(
+            positionMs
         )
+
+        invalidate()
+    }
+
+    override fun onDetachedFromWindow() {
+        clearThumbnails()
+        super.onDetachedFromWindow()
     }
 }

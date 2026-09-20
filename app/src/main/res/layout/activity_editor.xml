@@ -5,25 +5,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#070B1D">
+    android:background="#050816">
 
-    <!-- TOP BAR -->
+    <!-- ===================================================== -->
+    <!-- TOP BAR                                               -->
+    <!-- ===================================================== -->
+
     <LinearLayout
+        android:id="@+id/editorTopBar"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="58dp"
+        android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
-        android:background="#0D1638">
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:background="#0B1230">
 
         <TextView
             android:id="@+id/editorBack"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:gravity="center"
             android:text="‹"
             android:textColor="#FFFFFF"
-            android:textSize="32sp" />
+            android:textSize="34sp"
+            android:clickable="true"
+            android:focusable="true" />
 
         <TextView
             android:id="@+id/editorTitle"
@@ -31,181 +38,557 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:text="My Project"
             android:textColor="#FFFFFF"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/editorSave"
-            android:layout_width="65dp"
+            android:layout_width="72dp"
             android:layout_height="40dp"
             android:gravity="center"
             android:text="SAVE"
             android:textColor="#FFFFFF"
             android:textSize="13sp"
             android:textStyle="bold"
-            android:background="@drawable/bg_tab_selected" />
+            android:background="@drawable/bg_tab_selected"
+            android:clickable="true"
+            android:focusable="true" />
 
     </LinearLayout>
 
-    <!-- VIDEO PREVIEW -->
+
+    <!-- ===================================================== -->
+    <!-- PREVIEW + SIDE TOOLS                                  -->
+    <!-- ===================================================== -->
+
     <FrameLayout
+        android:id="@+id/editorWorkspace"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_margin="10dp"
-        android:background="#000000">
+        android:background="#02030A">
 
-        <VideoView
-            android:id="@+id/videoPreview"
+        <!-- LEFT TOOL BAR -->
+
+        <LinearLayout
+            android:id="@+id/leftToolBar"
+            android:layout_width="58dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:background="#111318">
+
+            <TextView
+                android:id="@+id/toolMedia"
+                android:layout_width="48dp"
+                android:layout_height="52dp"
+                android:gravity="center"
+                android:text="▣&#10;Media"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/toolLayer"
+                android:layout_width="48dp"
+                android:layout_height="52dp"
+                android:gravity="center"
+                android:text="▤&#10;Layer"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/toolText"
+                android:layout_width="48dp"
+                android:layout_height="52dp"
+                android:gravity="center"
+                android:text="T&#10;Text"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/toolEffect"
+                android:layout_width="48dp"
+                android:layout_height="52dp"
+                android:gravity="center"
+                android:text="fx&#10;Effect"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
+
+
+        <!-- ================================================= -->
+        <!-- VIDEO CANVAS / PREVIEW                            -->
+        <!-- ================================================= -->
+
+        <FrameLayout
+            android:id="@+id/videoCanvas"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#000000" />
+            android:layout_marginStart="58dp"
+            android:layout_marginEnd="58dp"
+            android:gravity="center"
+            android:background="#000000">
 
-        <TextView
-            android:id="@+id/videoTime"
-            android:layout_width="wrap_content"
+            <VideoView
+                android:id="@+id/videoPreview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="#000000" />
+
+            <!-- Future overlay/layer area -->
+
+            <FrameLayout
+                android:id="@+id/previewOverlayLayer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="false"
+                android:focusable="false" />
+
+            <TextView
+                android:id="@+id/videoTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:text="00:00 / 00:00"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:background="#99000000" />
+
+        </FrameLayout>
+
+
+        <!-- RIGHT TOOL BAR -->
+
+        <LinearLayout
+            android:id="@+id/rightToolBar"
+            android:layout_width="58dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="12dp"
-            android:text="00:00 / 00:00"
-            android:textColor="#FFFFFF"
-            android:textSize="13sp" />
+            android:layout_gravity="end|center_vertical"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:background="#111318">
+
+            <TextView
+                android:id="@+id/toolSettings"
+                android:layout_width="48dp"
+                android:layout_height="52dp"
+                android:gravity="center"
+                android:text="⚙&#10;Settings"
+                android:textColor="#FFFFFF"
+                android:textSize="9sp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/undoButton"
+                android:layout_width="48dp"
+                android:layout_height="52dp"
+                android:gravity="center"
+                android:text="↶&#10;Undo"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/redoButton"
+                android:layout_width="48dp"
+                android:layout_height="52dp"
+                android:gravity="center"
+                android:text="↷&#10;Redo"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/playButton"
+                android:layout_width="48dp"
+                android:layout_height="52dp"
+                android:gravity="center"
+                android:text="▶&#10;Play"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
 
     </FrameLayout>
 
-    <!-- PLAYBACK CONTROLS -->
+
+    <!-- ===================================================== -->
+    <!-- नीचे अगला भाग यहाँ से जारी होगा                       -->
+    <!-- ===================================================== -->
+
+    <!-- CONTINUE PART 2 HERE -->
+    <!-- ===================================================== -->
+    <!-- TIMELINE HEADER / ZOOM                               -->
+    <!-- ===================================================== -->
+
     <LinearLayout
+        android:id="@+id/timelineHeader"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:gravity="center"
-        android:background="#0D1638">
+        android:layout_height="42dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:background="#0B1230">
 
         <TextView
-            android:id="@+id/undoButton"
-            android:layout_width="50dp"
-            android:layout_height="45dp"
-            android:gravity="center"
-            android:text="↶"
+            android:id="@+id/timelineLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="TIMELINE"
             android:textColor="#FFFFFF"
-            android:textSize="24sp" />
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/playButton"
-            android:layout_width="55dp"
-            android:layout_height="45dp"
+            android:id="@+id/timelineZoomOut"
+            android:layout_width="42dp"
+            android:layout_height="34dp"
             android:gravity="center"
-            android:text="▶"
+            android:text="−"
             android:textColor="#FFFFFF"
-            android:textSize="22sp" />
+            android:textSize="22sp"
+            android:background="@drawable/bg_tab"
+            android:clickable="true"
+            android:focusable="true" />
 
         <TextView
-            android:id="@+id/redoButton"
-            android:layout_width="50dp"
-            android:layout_height="45dp"
+            android:id="@+id/timelineZoomValue"
+            android:layout_width="58dp"
+            android:layout_height="34dp"
             android:gravity="center"
-            android:text="↷"
+            android:text="100%"
             android:textColor="#FFFFFF"
-            android:textSize="24sp" />
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/timelineZoomIn"
+            android:layout_width="42dp"
+            android:layout_height="34dp"
+            android:gravity="center"
+            android:text="+"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:background="@drawable/bg_tab"
+            android:clickable="true"
+            android:focusable="true" />
 
     </LinearLayout>
 
-    <!-- REAL TIMELINE -->
-    <HorizontalScrollView
-        android:id="@+id/timelineScroll"
+
+    <!-- ===================================================== -->
+    <!-- TIMELINE                                               -->
+    <!-- ===================================================== -->
+
+    <FrameLayout
+        android:id="@+id/timelineContainer"
         android:layout_width="match_parent"
-        android:layout_height="210dp"
-        android:scrollbars="horizontal"
-        android:background="#0A1029">
+        android:layout_height="250dp"
+        android:background="#080D22">
 
-        <com.myvideoeditor.editor.TimelineView
-            android:id="@+id/timelineView"
-            android:layout_width="wrap_content"
-            android:layout_height="210dp" />
-
-    </HorizontalScrollView>
-
-    <!-- TOOL BAR -->
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="92dp"
-        android:scrollbars="none"
-        android:background="#0D1638">
+        <!-- LEFT TRACK LABEL AREA -->
 
         <LinearLayout
+            android:id="@+id/timelineTrackLabels"
+            android:layout_width="58dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="#0D1533">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="76dp"
+                android:gravity="center"
+                android:text="VIDEO"
+                android:textColor="#FFFFFF"
+                android:textSize="9sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:gravity="center"
+                android:text="TEXT"
+                android:textColor="#C5CAE9"
+                android:textSize="9sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="76dp"
+                android:gravity="center"
+                android:text="AUDIO"
+                android:textColor="#C5CAE9"
+                android:textSize="9sp" />
+
+        </LinearLayout>
+
+
+        <!-- SCROLLABLE TIMELINE -->
+
+        <HorizontalScrollView
+            android:id="@+id/timelineScroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="58dp"
+            android:fillViewport="false"
+            android:scrollbars="horizontal"
+            android:overScrollMode="never"
+            android:background="#080D22">
+
+            <FrameLayout
+                android:id="@+id/timelineContent"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <!-- TIMELINE RULER -->
+
+                <com.myvideoeditor.editor.TimelineView
+                    android:id="@+id/timelineView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="250dp" />
+
+                <!-- FUTURE OVERLAY FOR SELECTION / PLAYHEAD -->
+
+                <FrameLayout
+                    android:id="@+id/timelineOverlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="false"
+                    android:focusable="false" />
+
+            </FrameLayout>
+
+        </HorizontalScrollView>
+
+    </FrameLayout>
+
+
+    <!-- ===================================================== -->
+    <!-- QUICK EDIT TOOLS                                      -->
+    <!-- ===================================================== -->
+
+    <HorizontalScrollView
+        android:id="@+id/editToolsScroll"
+        android:layout_width="match_parent"
+        android:layout_height="82dp"
+        android:scrollbars="none"
+        android:overScrollMode="never"
+        android:background="#0B1230">
+
+        <LinearLayout
+            android:id="@+id/editToolsContainer"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingStart="8dp"
             android:paddingEnd="8dp">
 
             <TextView
-                android:layout_width="78dp"
-                android:layout_height="70dp"
+                android:id="@+id/editTrim"
+                android:layout_width="76dp"
+                android:layout_height="68dp"
                 android:gravity="center"
                 android:text="✂&#10;Trim"
                 android:textColor="#FFFFFF"
-                android:textSize="13sp" />
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="true" />
 
             <TextView
-                android:layout_width="78dp"
-                android:layout_height="70dp"
+                android:id="@+id/editSplit"
+                android:layout_width="76dp"
+                android:layout_height="68dp"
                 android:gravity="center"
                 android:text="✂&#10;Split"
                 android:textColor="#FFFFFF"
-                android:textSize="13sp" />
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="true" />
 
             <TextView
-                android:layout_width="78dp"
-                android:layout_height="70dp"
+                android:id="@+id/editText"
+                android:layout_width="76dp"
+                android:layout_height="68dp"
                 android:gravity="center"
-                android:text="📝&#10;Text"
+                android:text="T&#10;Text"
                 android:textColor="#FFFFFF"
-                android:textSize="13sp" />
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="true" />
 
             <TextView
-                android:layout_width="78dp"
-                android:layout_height="70dp"
+                android:id="@+id/editAudio"
+                android:layout_width="76dp"
+                android:layout_height="68dp"
                 android:gravity="center"
-                android:text="🎵&#10;Audio"
+                android:text="♫&#10;Audio"
                 android:textColor="#FFFFFF"
-                android:textSize="13sp" />
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="true" />
 
             <TextView
-                android:layout_width="78dp"
-                android:layout_height="70dp"
+                android:id="@+id/editMedia"
+                android:layout_width="76dp"
+                android:layout_height="68dp"
                 android:gravity="center"
-                android:text="🖼️&#10;Media"
+                android:text="▣&#10;Media"
                 android:textColor="#FFFFFF"
-                android:textSize="13sp" />
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="true" />
 
             <TextView
-                android:layout_width="78dp"
-                android:layout_height="70dp"
+                android:id="@+id/editFilter"
+                android:layout_width="76dp"
+                android:layout_height="68dp"
                 android:gravity="center"
-                android:text="✨&#10;Effects"
+                android:text="◈&#10;Filter"
                 android:textColor="#FFFFFF"
-                android:textSize="13sp" />
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="true" />
 
             <TextView
-                android:layout_width="78dp"
-                android:layout_height="70dp"
+                android:id="@+id/editEffect"
+                android:layout_width="76dp"
+                android:layout_height="68dp"
                 android:gravity="center"
-                android:text="🎨&#10;Filter"
+                android:text="fx&#10;Effect"
                 android:textColor="#FFFFFF"
-                android:textSize="13sp" />
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="true" />
 
             <TextView
-                android:layout_width="78dp"
-                android:layout_height="70dp"
+                android:id="@+id/editSpeed"
+                android:layout_width="76dp"
+                android:layout_height="68dp"
                 android:gravity="center"
-                android:text="⚙&#10;More"
+                android:text="1×&#10;Speed"
                 android:textColor="#FFFFFF"
-                android:textSize="13sp" />
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/editVolume"
+                android:layout_width="76dp"
+                android:layout_height="68dp"
+                android:gravity="center"
+                android:text="🔊&#10;Volume"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/editMore"
+                android:layout_width="76dp"
+                android:layout_height="68dp"
+                android:gravity="center"
+                android:text="⋮&#10;More"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="true" />
 
         </LinearLayout>
 
     </HorizontalScrollView>
+
+
+    <!-- ===================================================== -->
+    <!-- CONTINUE PART 3 HERE                                 -->
+    <!-- ===================================================== -->
+    <!-- ===================================================== -->
+    <!-- SELECTED CLIP CONTROL BAR                             -->
+    <!-- ===================================================== -->
+
+    <LinearLayout
+        android:id="@+id/selectedClipControls"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:background="#111A3A">
+
+        <TextView
+            android:id="@+id/clipName"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="No clip selected"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/clipDelete"
+            android:layout_width="58dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:text="Delete"
+            android:textColor="#FFFFFF"
+            android:textSize="10sp"
+            android:background="@drawable/bg_tab"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/clipDuplicate"
+            android:layout_width="68dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="6dp"
+            android:gravity="center"
+            android:text="Copy"
+            android:textColor="#FFFFFF"
+            android:textSize="10sp"
+            android:background="@drawable/bg_tab"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
+
+
+    <!-- ===================================================== -->
+    <!-- EDITOR ROOT CLOSE                                    -->
+    <!-- ===================================================== -->
 
 </LinearLayout>

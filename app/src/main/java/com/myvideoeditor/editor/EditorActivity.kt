@@ -22,7 +22,14 @@ class EditorActivity : Activity() {
     private lateinit var videoTime: TextView
     private lateinit var timelineView: TimelineView
 
+    private lateinit var zoomOutButton: TextView
+    private lateinit var zoomInButton: TextView
+    private lateinit var zoomValue: TextView
+
     private var videoPrepared = false
+
+    private var currentZoom =
+        TimelineMetrics.DEFAULT_ZOOM
 
     private val timeHandler =
         Handler(Looper.getMainLooper())
@@ -42,7 +49,7 @@ class EditorActivity : Activity() {
 
                     timeHandler.postDelayed(
                         this,
-                        200
+                        100
                     )
                 }
             }
@@ -72,7 +79,8 @@ class EditorActivity : Activity() {
                 R.id.editorTitle
             )
 
-        editorTitle.text = projectName
+        editorTitle.text =
+            projectName
 
         val backButton =
             findViewById<TextView>(
@@ -81,6 +89,15 @@ class EditorActivity : Activity() {
 
         backButton.setOnClickListener {
             finish()
+        }
+
+        val saveButton =
+            findViewById<TextView>(
+                R.id.editorSave
+            )
+
+        saveButton.setOnClickListener {
+            saveEditorState()
         }
 
         videoPreview =
@@ -103,99 +120,191 @@ class EditorActivity : Activity() {
                 R.id.timelineView
             )
 
-        playButton.text = "▶"
-
-        if (!videoUriString.isNullOrEmpty()) {
-
-            val videoUri =
-                Uri.parse(
-                    videoUriString
-                )
-
-            videoPreview.setVideoURI(
-                videoUri
+        zoomOutButton =
+            findViewById(
+                R.id.zoomOutButton
             )
 
-            timelineView.setVideoUri(
-                videoUri
+        zoomInButton =
+            findViewById(
+                R.id.zoomInButton
             )
 
-            videoPreview.setOnPreparedListener {
+        zoomValue =
+            findViewById(
+                R.id.zoomValue
+            )
 
-                videoPrepared = true
+        playButton.text =
+            "▶"
 
-                val duration =
-                    videoPreview.duration
+        setupZoomControls()
+        setupTimeline()
+        setupVideo(videoUriString)
+    }
+    private fun setupZoomControls() {
 
-                timelineView.setDuration(
-                    duration
+        updateZoomText()
+
+        zoomInButton.setOnClickListener {
+
+            currentZoom =
+                TimelineMetrics.zoomIn(
+                    currentZoom
                 )
 
-                timelineView.setPosition(
-                    0
+            timelineView.setZoom(
+                currentZoom
+            )
+
+            updateZoomText()
+        }
+
+        zoomOutButton.setOnClickListener {
+
+            currentZoom =
+                TimelineMetrics.zoomOut(
+                    currentZoom
                 )
 
-                videoTime.text =
-                    "00:00 / ${
-                        formatTime(duration)
-                    }"
+            timelineView.setZoom(
+                currentZoom
+            )
 
-                playButton.text = "▶"
+            updateZoomText()
+        }
+    }
 
-                videoPreview.start()
+    private fun updateZoomText() {
 
-                videoPreview.postDelayed({
+        zoomValue.text =
+            TimelineMetrics.formatZoom(
+                currentZoom
+            )
+    }
 
-                    if (
-                        videoPrepared &&
-                        videoPreview.isPlaying
-                    ) {
+    private fun setupTimeline() {
 
-                        videoPreview.pause()
+        timelineView.setZoom(
+            currentZoom
+        )
 
-                        videoPreview.seekTo(
-                            0
-                        )
+        timelineView.setOnPositionChangedListener {
+            position ->
 
-                        playButton.text = "▶"
-
-                        updateEditorPosition()
-                    }
-
-                }, 100)
+            if (!videoPrepared) {
+                return@setOnPositionChangedListener
             }
 
-            videoPreview.setOnCompletionListener {
+            videoPreview.seekTo(
+                position
+            )
 
-                playButton.text = "▶"
-
-                timelineView.setPosition(
-                    videoPreview.duration
+            videoTime.text =
+                "${TimelineMetrics.formatTime(position.toLong())} / " +
+                TimelineMetrics.formatTime(
+                    videoPreview.duration.toLong()
                 )
 
-                updateEditorPosition()
+            if (videoPreview.isPlaying) {
+
+                videoPreview.pause()
+
+                playButton.text =
+                    "▶"
 
                 timeHandler.removeCallbacks(
                     timeUpdater
                 )
             }
+        }
+    }
 
-            videoPreview.setOnErrorListener {
-                    _, _, _ ->
+    private fun setupVideo(
+        videoUriString: String?
+    ) {
 
-                videoPrepared = false
+        if (videoUriString.isNullOrEmpty()) {
+            videoTime.text =
+                "00:00 / 00:00"
 
-                playButton.text = "▶"
+            return
+        }
 
-                videoTime.text =
-                    "Video could not be played"
+        val videoUri =
+            Uri.parse(
+                videoUriString
+            )
 
-                timeHandler.removeCallbacks(
-                    timeUpdater
+        videoPreview.setVideoURI(
+            videoUri
+        )
+
+        timelineView.setVideoUri(
+            videoUri
+        )
+
+        videoPreview.setOnPreparedListener {
+
+            videoPrepared = true
+
+            val duration =
+                videoPreview.duration
+
+            timelineView.setDuration(
+                duration
+            )
+
+            timelineView.setPosition(
+                0
+            )
+
+            videoTime.text =
+                "${TimelineMetrics.formatTime(0L)} / " +
+                TimelineMetrics.formatTime(
+                    duration.toLong()
                 )
 
-                true
-            }
+            playButton.text =
+                "▶"
+
+            videoPreview.seekTo(
+                0
+            )
+        }
+
+        videoPreview.setOnCompletionListener {
+
+            playButton.text =
+                "▶"
+
+            timelineView.setPosition(
+                videoPreview.duration
+            )
+
+            updateEditorPosition()
+
+            timeHandler.removeCallbacks(
+                timeUpdater
+            )
+        }
+
+        videoPreview.setOnErrorListener {
+                _, _, _ ->
+
+            videoPrepared = false
+
+            playButton.text =
+                "▶"
+
+            videoTime.text =
+                "Video could not be played"
+
+            timeHandler.removeCallbacks(
+                timeUpdater
+            )
+
+            true
         }
 
         playButton.setOnClickListener {
@@ -204,11 +313,14 @@ class EditorActivity : Activity() {
                 return@setOnClickListener
             }
 
-            if (videoPreview.isPlaying) {
+            if (
+                videoPreview.isPlaying
+            ) {
 
                 videoPreview.pause()
 
-                playButton.text = "▶"
+                playButton.text =
+                    "▶"
 
                 timeHandler.removeCallbacks(
                     timeUpdater
@@ -224,7 +336,9 @@ class EditorActivity : Activity() {
                     videoPreview.duration
                 ) {
 
-                    videoPreview.seekTo(0)
+                    videoPreview.seekTo(
+                        0
+                    )
 
                     timelineView.setPosition(
                         0
@@ -233,7 +347,8 @@ class EditorActivity : Activity() {
 
                 videoPreview.start()
 
-                playButton.text = "Ⅱ"
+                playButton.text =
+                    "Ⅱ"
 
                 timeHandler.removeCallbacks(
                     timeUpdater
@@ -244,38 +359,7 @@ class EditorActivity : Activity() {
                 )
             }
         }
-
-        timelineView.setOnPositionChangedListener {
-                position ->
-
-            if (!videoPrepared) {
-                return@setOnPositionChangedListener
-            }
-
-            videoPreview.seekTo(
-                position
-            )
-
-            videoTime.text =
-                "${formatTime(position)} / ${
-                    formatTime(
-                        videoPreview.duration
-                    )
-                }"
-
-            if (videoPreview.isPlaying) {
-
-                videoPreview.pause()
-
-                playButton.text = "▶"
-
-                timeHandler.removeCallbacks(
-                    timeUpdater
-                )
-            }
-        }
     }
-
     private fun updateEditorPosition() {
 
         if (!videoPrepared) {
@@ -289,33 +373,33 @@ class EditorActivity : Activity() {
             videoPreview.duration
 
         videoTime.text =
-            "${formatTime(position)} / ${
-                formatTime(duration)
-            }"
+            "${TimelineMetrics.formatTime(position.toLong())} / " +
+            TimelineMetrics.formatTime(
+                duration.toLong()
+            )
 
         timelineView.setPosition(
             position
         )
     }
 
-    private fun formatTime(
-        milliseconds: Int
-    ): String {
+    private fun saveEditorState() {
 
-        val totalSeconds =
-            milliseconds / 1000
+        if (!videoPrepared) {
+            return
+        }
 
-        val minutes =
-            totalSeconds / 60
-
-        val seconds =
-            totalSeconds % 60
-
-        return String.format(
-            "%02d:%02d",
-            minutes,
-            seconds
+        timelineView.setPosition(
+            videoPreview.currentPosition
         )
+
+        videoTime.text =
+            "${TimelineMetrics.formatTime(
+                videoPreview.currentPosition.toLong()
+            )} / " +
+            TimelineMetrics.formatTime(
+                videoPreview.duration.toLong()
+            )
     }
 
     override fun onPause() {
@@ -329,7 +413,8 @@ class EditorActivity : Activity() {
 
             videoPreview.pause()
 
-            playButton.text = "▶"
+            playButton.text =
+                "▶"
 
             timeHandler.removeCallbacks(
                 timeUpdater
@@ -350,6 +435,13 @@ class EditorActivity : Activity() {
         ) {
 
             videoPreview.stopPlayback()
+        }
+
+        if (
+            ::timelineView.isInitialized
+        ) {
+
+            timelineView.clearThumbnails()
         }
 
         super.onDestroy()
