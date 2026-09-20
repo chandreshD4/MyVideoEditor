@@ -1,6 +1,7 @@
 package com.myvideoeditor.editor
 
 import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
@@ -39,6 +40,9 @@ class EditorActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        requestedOrientation =
+            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
         aspectRatio =
             intent.getStringExtra(EXTRA_ASPECT_RATIO) ?: "9:16"
 
@@ -59,9 +63,6 @@ class EditorActivity : Activity() {
 
     private fun buildEditor() {
 
-        requestedOrientation =
-            android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(Color.rgb(7, 9, 16))
@@ -81,7 +82,7 @@ class EditorActivity : Activity() {
         }
 
         workspace.addView(
-            createToolBar(left = true),
+            createToolBar(true),
             LinearLayout.LayoutParams(
                 62.dp(),
                 ViewGroup.LayoutParams.MATCH_PARENT
@@ -90,12 +91,9 @@ class EditorActivity : Activity() {
 
         previewContainer = FrameLayout(this).apply {
             setBackgroundColor(Color.BLACK)
-            gravity = Gravity.CENTER
         }
 
-        val previewHolder = FrameLayout(this).apply {
-            gravity = Gravity.CENTER
-        }
+        val previewHolder = FrameLayout(this)
 
         setupPreview(previewHolder)
 
@@ -117,7 +115,7 @@ class EditorActivity : Activity() {
         )
 
         workspace.addView(
-            createToolBar(left = false),
+            createToolBar(false),
             LinearLayout.LayoutParams(
                 62.dp(),
                 ViewGroup.LayoutParams.MATCH_PARENT
@@ -148,15 +146,15 @@ class EditorActivity : Activity() {
 
         val bar = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
+            setGravity(Gravity.CENTER_VERTICAL)
             setBackgroundColor(Color.rgb(15, 18, 30))
             setPadding(10.dp(), 0, 10.dp(), 0)
         }
 
-        val back = button("‹", 28).apply {
-            setOnClickListener {
-                finish()
-            }
+        val back = button("‹", 28)
+
+        back.setOnClickListener {
+            finish()
         }
 
         bar.addView(
@@ -169,9 +167,9 @@ class EditorActivity : Activity() {
 
         val title = TextView(this).apply {
             text = "New Project"
-            textColor = Color.WHITE
+            setTextColor(Color.WHITE)
             textSize = 16f
-            gravity = Gravity.CENTER_VERTICAL
+            setGravity(Gravity.CENTER_VERTICAL)
         }
 
         bar.addView(
@@ -204,11 +202,14 @@ class EditorActivity : Activity() {
 
         val export = TextView(this).apply {
             text = "EXPORT"
-            textColor = Color.WHITE
+            setTextColor(Color.WHITE)
             textSize = 13f
-            gravity = Gravity.CENTER
+            setGravity(Gravity.CENTER)
             setPadding(14.dp(), 0, 14.dp(), 0)
-            background = rounded(Color.rgb(70, 80, 220), 10)
+            background = rounded(
+                Color.rgb(70, 80, 220),
+                10
+            )
         }
 
         bar.addView(
@@ -241,9 +242,9 @@ class EditorActivity : Activity() {
 
             "image" -> {
                 val image = ImageView(this).apply {
-                    setImageURI(
-                        Uri.parse(mediaUri)
-                    )
+                    if (!mediaUri.isNullOrEmpty()) {
+                        setImageURI(Uri.parse(mediaUri))
+                    }
                     scaleType =
                         ImageView.ScaleType.FIT_CENTER
                 }
@@ -261,9 +262,9 @@ class EditorActivity : Activity() {
 
                 val text = TextView(this).apply {
                     text = aspectRatio
-                    textColor = Color.GRAY
+                    setTextColor(Color.GRAY)
                     textSize = 13f
-                    gravity = Gravity.CENTER
+                    setGravity(Gravity.CENTER)
                 }
 
                 holder.addView(
@@ -277,36 +278,30 @@ class EditorActivity : Activity() {
     private fun centeredPreviewParams():
         FrameLayout.LayoutParams {
 
-        val params =
-            FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-
-        params.gravity = Gravity.CENTER
-
-        return params
+        return FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        ).apply {
+            gravity = Gravity.CENTER
+        }
     }
 
     private fun createToolBar(left: Boolean): View {
 
         val bar = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
+            setGravity(Gravity.CENTER)
             setBackgroundColor(Color.rgb(13, 16, 27))
             setPadding(5.dp(), 8.dp(), 5.dp(), 8.dp())
         }
 
         if (left) {
-
             addTool(bar, "Media")
             addTool(bar, "Layer")
             addTool(bar, "Text")
             addTool(bar, "Audio")
             addTool(bar, "Voice")
-
         } else {
-
             addTool(bar, "Crop")
             addTool(bar, "Speed")
             addTool(bar, "Filter")
@@ -324,14 +319,13 @@ class EditorActivity : Activity() {
 
         val item = TextView(this).apply {
             text = name
-            textColor = Color.WHITE
+            setTextColor(Color.WHITE)
             textSize = 10f
-            gravity = Gravity.CENTER
-            background =
-                rounded(
-                    Color.rgb(24, 28, 43),
-                    8
-                )
+            setGravity(Gravity.CENTER)
+            background = rounded(
+                Color.rgb(24, 28, 43),
+                8
+            )
         }
 
         val params =
@@ -360,19 +354,21 @@ class EditorActivity : Activity() {
 
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
+            setGravity(Gravity.CENTER)
             setBackgroundColor(
                 Color.rgb(18, 22, 35)
             )
         }
 
         val zoomOut = button("−", 20)
+
         val zoomText = TextView(this).apply {
             text = "100%"
-            textColor = Color.WHITE
-            gravity = Gravity.CENTER
+            setTextColor(Color.WHITE)
+            setGravity(Gravity.CENTER)
             textSize = 11f
         }
+
         val zoomIn = button("+", 20)
 
         header.addView(
@@ -472,7 +468,9 @@ class EditorActivity : Activity() {
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
 
-        playheadParams.gravity = Gravity.CENTER_HORIZONTAL
+        playheadParams.gravity =
+            Gravity.CENTER_HORIZONTAL
+
         playheadParams.topMargin = 40.dp()
 
         area.addView(
@@ -498,19 +496,18 @@ class EditorActivity : Activity() {
 
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
+            setGravity(Gravity.CENTER_VERTICAL)
         }
 
         val label = TextView(this).apply {
             text = name
-            textColor = Color.WHITE
+            setTextColor(Color.WHITE)
             textSize = 10f
-            gravity = Gravity.CENTER
-            background =
-                rounded(
-                    Color.rgb(25, 29, 42),
-                    6
-                )
+            setGravity(Gravity.CENTER)
+            background = rounded(
+                Color.rgb(25, 29, 42),
+                6
+            )
         }
 
         row.addView(
@@ -523,16 +520,19 @@ class EditorActivity : Activity() {
 
         val clip = TextView(this).apply {
             text =
-                if (name == "VIDEO")
+                if (name == "VIDEO") {
                     "  Video Clip  "
-                else
+                } else {
                     "  $name Track  "
+                }
 
-            textColor = Color.WHITE
+            setTextColor(Color.WHITE)
             textSize = 12f
-            gravity = Gravity.CENTER_VERTICAL
-            background =
-                rounded(color, 8)
+            setGravity(Gravity.CENTER_VERTICAL)
+            background = rounded(
+                color,
+                8
+            )
         }
 
         val clipParams =
@@ -572,9 +572,9 @@ class EditorActivity : Activity() {
 
         return TextView(this).apply {
             text = textValue
-            textColor = Color.WHITE
+            setTextColor(Color.WHITE)
             textSize = size.toFloat()
-            gravity = Gravity.CENTER
+            setGravity(Gravity.CENTER)
         }
     }
 
@@ -594,6 +594,6 @@ class EditorActivity : Activity() {
         return (
             this *
                 resources.displayMetrics.density
-        ).toInt()
+            ).toInt()
     }
 }
