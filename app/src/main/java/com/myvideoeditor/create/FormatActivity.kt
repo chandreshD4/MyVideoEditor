@@ -1,8 +1,12 @@
 package com.myvideoeditor.create
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.SeekBar
@@ -14,83 +18,200 @@ class FormatActivity : Activity() {
     companion object {
         const val EXTRA_ASPECT_RATIO = "aspect_ratio"
         const val EXTRA_PROJECT_NAME = "project_name"
+        const val EXTRA_PHOTO_MODE = "photo_mode"
+        const val EXTRA_PHOTO_DURATION = "photo_duration"
+        const val EXTRA_TRANSITION_DURATION = "transition_duration"
     }
 
     private var selectedRatio = "16:9"
+    private var customRatio = false
+
+    private var photoMode = "Fit"
+    private var photoDuration = 4.5f
+    private var transitionDuration = 1.5f
+
+    private lateinit var advancedContent: View
+    private lateinit var advancedArrow: TextView
+    private lateinit var customRatioView: TextView
+
+    private lateinit var ratio16x9: TextView
+    private lateinit var ratio9x16: TextView
+    private lateinit var ratio1x1: TextView
+    private lateinit var ratio4x3: TextView
+    private lateinit var ratio3x4: TextView
+    private lateinit var ratio4x5: TextView
+    private lateinit var ratioCinema: TextView
+
+    private lateinit var photoFit: TextView
+    private lateinit var photoFill: TextView
+    private lateinit var photoAuto: TextView
+
+    private lateinit var photoDurationValue: TextView
+    private lateinit var transitionDurationValue: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_format_selection)
 
-        val projectName =
-            findViewById<EditText>(R.id.projectName)
+        bindViews()
+        setupClicks()
+        setupSliders()
 
-        findViewById<TextView>(R.id.formatBack)
+        updateRatioSelection()
+        updatePhotoModeSelection()
+    }
+
+    private fun bindViews() {
+
+        advancedArrow =
+            findViewById(R.id.advancedArrow)
+
+        advancedContent =
+            findViewById(R.id.advancedContent)
+
+        customRatioView =
+            findViewById(R.id.customRatio)
+
+        ratio16x9 =
+            findViewById(R.id.ratio16x9)
+
+        ratio9x16 =
+            findViewById(R.id.ratio9x16)
+
+        ratio1x1 =
+            findViewById(R.id.ratio1x1)
+
+        ratio4x3 =
+            findViewById(R.id.ratio4x3)
+
+        ratio3x4 =
+            findViewById(R.id.ratio3x4)
+
+        ratio4x5 =
+            findViewById(R.id.ratio4x5)
+
+        ratioCinema =
+            findViewById(R.id.ratioCinema)
+
+        photoFit =
+            findViewById(R.id.photoFit)
+
+        photoFill =
+            findViewById(R.id.photoFill)
+
+        photoAuto =
+            findViewById(R.id.photoAuto)
+
+        photoDurationValue =
+            findViewById(R.id.photoDurationValue)
+
+        transitionDurationValue =
+            findViewById(R.id.transitionDurationValue)
+    }
+
+    private fun setupClicks() {
+
+        findViewById<TextView>(R.id.formatClose)
             .setOnClickListener {
                 finish()
             }
 
-        setupRatio(
-            R.id.formatYouTube,
-            "16:9"
-        )
+        findViewById<TextView>(R.id.importButton)
+            .setOnClickListener {
+                openImportPicker()
+            }
 
-        setupRatio(
-            R.id.formatShorts,
-            "9:16"
-        )
+        ratio16x9.setOnClickListener {
+            chooseRatio("16:9")
+        }
 
-        setupRatio(
-            R.id.formatSquare,
-            "1:1"
-        )
+        ratio9x16.setOnClickListener {
+            chooseRatio("9:16")
+        }
 
-        setupRatio(
-            R.id.format43,
-            "4:3"
-        )
+        ratio1x1.setOnClickListener {
+            chooseRatio("1:1")
+        }
 
-        setupRatio(
-            R.id.format34,
-            "3:4"
-        )
+        ratio4x3.setOnClickListener {
+            chooseRatio("4:3")
+        }
 
-        setupRatio(
-            R.id.format45,
-            "4:5"
-        )
+        ratio3x4.setOnClickListener {
+            chooseRatio("3:4")
+        }
 
-        setupRatio(
-            R.id.formatCinema,
-            "2.35:1"
-        )
+        ratio4x5.setOnClickListener {
+            chooseRatio("4:5")
+        }
 
-        val photoDuration =
+        ratioCinema.setOnClickListener {
+            chooseRatio("2.35:1")
+        }
+
+        customRatioView.setOnClickListener {
+            showCustomSizeDialog()
+        }
+
+        findViewById<TextView>(R.id.advancedHeader)
+            .setOnClickListener {
+                toggleAdvanced()
+            }
+
+        photoFit.setOnClickListener {
+            photoMode = "Fit"
+            updatePhotoModeSelection()
+        }
+
+        photoFill.setOnClickListener {
+            photoMode = "Fill"
+            updatePhotoModeSelection()
+        }
+
+        photoAuto.setOnClickListener {
+            photoMode = "Auto"
+            updatePhotoModeSelection()
+        }
+
+        findViewById<TextView>(R.id.createButton)
+            .setOnClickListener {
+                createProject()
+            }
+    }
+
+    private fun setupSliders() {
+
+        val photoSlider =
             findViewById<SeekBar>(
-                R.id.photoDurationSeek
+                R.id.photoDurationSlider
             )
 
-        val photoDurationValue =
-            findViewById<TextView>(
-                R.id.photoDurationValue
+        val transitionSlider =
+            findViewById<SeekBar>(
+                R.id.transitionDurationSlider
             )
 
-        photoDuration.setOnSeekBarChangeListener(
-            object : SeekBar.OnSeekBarChangeListener {
+        photoSlider.progress = 35
+        transitionSlider.progress = 15
+
+        photoSlider.setOnSeekBarChangeListener(
+            object :
+                SeekBar.OnSeekBarChangeListener {
 
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
                     progress: Int,
                     fromUser: Boolean
                 ) {
-                    val value =
-                        1.0 + (progress / 10.0)
+                    photoDuration =
+                        1.0f +
+                            (progress / 10.0f)
 
                     photoDurationValue.text =
                         String.format(
                             "%.1f",
-                            value
+                            photoDuration
                         )
                 }
 
@@ -106,31 +227,23 @@ class FormatActivity : Activity() {
             }
         )
 
-        val transitionDuration =
-            findViewById<SeekBar>(
-                R.id.transitionDurationSeek
-            )
-
-        val transitionDurationValue =
-            findViewById<TextView>(
-                R.id.transitionDurationValue
-            )
-
-        transitionDuration.setOnSeekBarChangeListener(
-            object : SeekBar.OnSeekBarChangeListener {
+        transitionSlider.setOnSeekBarChangeListener(
+            object :
+                SeekBar.OnSeekBarChangeListener {
 
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
                     progress: Int,
                     fromUser: Boolean
                 ) {
-                    val value =
-                        0.5 + (progress / 10.0)
+                    transitionDuration =
+                        0.5f +
+                            (progress / 10.0f)
 
                     transitionDurationValue.text =
                         String.format(
                             "%.1f",
-                            value
+                            transitionDuration
                         )
                 }
 
@@ -146,106 +259,387 @@ class FormatActivity : Activity() {
             }
         )
 
-        findViewById<TextView>(R.id.formatCreate)
-            .setOnClickListener {
-
-                val name =
-                    projectName.text
-                        .toString()
-                        .trim()
-                        .ifEmpty {
-                            "New Project"
-                        }
-
-                val intent =
-                    Intent(
-                        this,
-                        MediaSourceActivity::class.java
-                    ).apply {
-
-                        putExtra(
-                            EXTRA_ASPECT_RATIO,
-                            selectedRatio
-                        )
-
-                        putExtra(
-                            EXTRA_PROJECT_NAME,
-                            name
-                        )
-                    }
-
-                startActivity(intent)
-            }
+        photoDurationValue.text = "4.5"
+        transitionDurationValue.text = "1.5"
     }
 
-    private fun setupRatio(
-        viewId: Int,
+    private fun toggleAdvanced() {
+
+        if (
+            advancedContent.visibility ==
+            View.VISIBLE
+        ) {
+            advancedContent.visibility =
+                View.GONE
+
+            advancedArrow.text = "⌄"
+
+        } else {
+            advancedContent.visibility =
+                View.VISIBLE
+
+            advancedArrow.text = "⌃"
+        }
+    }
+
+    private fun chooseRatio(
         ratio: String
     ) {
+        selectedRatio = ratio
+        customRatio = false
 
-        findViewById<LinearLayout>(viewId)
-            .setOnClickListener {
+        customRatioView.text =
+            "+\nCUSTOM"
 
-                selectedRatio = ratio
-
-                updateSelection()
-            }
+        updateRatioSelection()
     }
 
-    private fun updateSelection() {
+    private fun updateRatioSelection() {
 
-        val selected =
-            android.graphics.Color.rgb(
-                32,
-                37,
-                51
+        val all =
+            listOf(
+                ratio16x9,
+                ratio9x16,
+                ratio1x1,
+                ratio4x3,
+                ratio3x4,
+                ratio4x5,
+                ratioCinema,
+                customRatioView
             )
 
-        val normal =
-            android.graphics.Color.TRANSPARENT
+        for (item in all) {
 
-        findViewById<LinearLayout>(
-            R.id.formatYouTube
-        ).setBackgroundColor(normal)
+            item.setBackgroundResource(
+                R.drawable.bg_ratio_unselected
+            )
 
-        findViewById<LinearLayout>(
-            R.id.formatShorts
-        ).setBackgroundColor(normal)
+            item.setTextColor(
+                Color.rgb(
+                    190,
+                    195,
+                    205
+                )
+            )
 
-        findViewById<LinearLayout>(
-            R.id.formatSquare
-        ).setBackgroundColor(normal)
+            item.alpha = 0.85f
+        }
 
-        findViewById<LinearLayout>(
-            R.id.format43
-        ).setBackgroundColor(normal)
+        val selected: TextView?
 
-        findViewById<LinearLayout>(
-            R.id.format34
-        ).setBackgroundColor(normal)
+        if (customRatio) {
+            selected = customRatioView
+        } else {
+            selected =
+                when (selectedRatio) {
+                    "16:9" -> ratio16x9
+                    "9:16" -> ratio9x16
+                    "1:1" -> ratio1x1
+                    "4:3" -> ratio4x3
+                    "3:4" -> ratio3x4
+                    "4:5" -> ratio4x5
+                    "2.35:1" -> ratioCinema
+                    else -> ratio16x9
+                }
+        }
 
-        findViewById<LinearLayout>(
-            R.id.format45
-        ).setBackgroundColor(normal)
+        selected.setBackgroundResource(
+            R.drawable.bg_ratio_selected
+        )
 
-        findViewById<LinearLayout>(
-            R.id.formatCinema
-        ).setBackgroundColor(normal)
+        selected.setTextColor(
+            Color.rgb(
+                255,
+                85,
+                95
+            )
+        )
 
-        val selectedId =
-            when (selectedRatio) {
-                "16:9" -> R.id.formatYouTube
-                "9:16" -> R.id.formatShorts
-                "1:1" -> R.id.formatSquare
-                "4:3" -> R.id.format43
-                "3:4" -> R.id.format34
-                "4:5" -> R.id.format45
-                "2.35:1" -> R.id.formatCinema
-                else -> R.id.formatYouTube
+        selected.alpha = 1.0f
+    }
+
+    private fun updatePhotoModeSelection() {
+
+        val all =
+            listOf(
+                photoFit,
+                photoFill,
+                photoAuto
+            )
+
+        for (item in all) {
+
+            item.setBackgroundResource(
+                R.drawable.bg_mode_unselected
+            )
+
+            item.setTextColor(
+                Color.rgb(
+                    185,
+                    190,
+                    200
+                )
+            )
+        }
+
+        val selected =
+            when (photoMode) {
+                "Fill" -> photoFill
+                "Auto" -> photoAuto
+                else -> photoFit
             }
 
-        findViewById<LinearLayout>(
-            selectedId
-        ).setBackgroundColor(selected)
+        selected.setBackgroundResource(
+            R.drawable.bg_mode_selected
+        )
+
+        selected.setTextColor(
+            Color.rgb(
+                65,
+                205,
+                245
+            )
+        )
+    }
+
+    private fun createProject() {
+
+        val name =
+            findViewById<EditText>(
+                R.id.projectName
+            )
+                .text
+                .toString()
+                .trim()
+                .ifEmpty {
+                    "New Project"
+                }
+
+        val intent =
+            Intent(
+                this,
+                MediaSourceActivity::class.java
+            ).apply {
+
+                putExtra(
+                    EXTRA_ASPECT_RATIO,
+                    selectedRatio
+                )
+
+                putExtra(
+                    EXTRA_PROJECT_NAME,
+                    name
+                )
+
+                putExtra(
+                    EXTRA_PHOTO_MODE,
+                    photoMode
+                )
+
+                putExtra(
+                    EXTRA_PHOTO_DURATION,
+                    photoDuration
+                )
+
+                putExtra(
+                    EXTRA_TRANSITION_DURATION,
+                    transitionDuration
+                )
+            }
+
+        startActivity(intent)
+    }
+
+    private fun openImportPicker() {
+
+        val intent =
+            Intent(
+                Intent.ACTION_OPEN_DOCUMENT
+            ).apply {
+
+                addCategory(
+                    Intent.CATEGORY_OPENABLE
+                )
+
+                type = "*/*"
+
+                putExtra(
+                    Intent.EXTRA_MIME_TYPES,
+                    arrayOf(
+                        "video/*",
+                        "image/*"
+                    )
+                )
+
+                addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                )
+            }
+
+        startActivityForResult(
+            intent,
+            501
+        )
+    }
+
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+        super.onActivityResult(
+            requestCode,
+            resultCode,
+            data
+        )
+
+        if (
+            requestCode != 501 ||
+            resultCode != RESULT_OK
+        ) {
+            return
+        }
+
+        val uri: Uri =
+            data?.data ?: return
+
+        try {
+            contentResolver
+                .takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+        } catch (_: SecurityException) {
+        }
+
+        val mime =
+            contentResolver.getType(uri)
+                ?: ""
+
+        val sourceType =
+            if (mime.startsWith("video/")) {
+                "video"
+            } else {
+                "image"
+            }
+
+        val intent =
+            Intent(
+                this,
+                MediaSourceActivity::class.java
+            ).apply {
+
+                putExtra(
+                    EXTRA_ASPECT_RATIO,
+                    selectedRatio
+                )
+
+                putExtra(
+                    EXTRA_PROJECT_NAME,
+                    "Imported Project"
+                )
+
+                putExtra(
+                    MediaSourceActivity.EXTRA_SOURCE_TYPE,
+                    sourceType
+                )
+
+                putExtra(
+                    MediaSourceActivity.EXTRA_MEDIA_URI,
+                    uri.toString()
+                )
+            }
+
+        startActivity(intent)
+    }
+
+    private fun showCustomSizeDialog() {
+
+        val layout =
+            LinearLayout(this).apply {
+
+                orientation =
+                    LinearLayout.VERTICAL
+
+                setPadding(
+                    45,
+                    10,
+                    45,
+                    5
+                )
+            }
+
+        val widthInput =
+            EditText(this).apply {
+                hint = "Width"
+                inputType = 2
+            }
+
+        val heightInput =
+            EditText(this).apply {
+                hint = "Height"
+                inputType = 2
+            }
+
+        layout.addView(
+            widthInput,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                55
+            )
+        )
+
+        layout.addView(
+            heightInput,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                55
+            )
+        )
+
+        AlertDialog.Builder(this)
+            .setTitle("Custom Canvas Size")
+            .setMessage(
+                "Enter width and height in pixels"
+            )
+            .setView(layout)
+            .setNegativeButton(
+                "Cancel",
+                null
+            )
+            .setPositiveButton(
+                "Use Size"
+            ) { _, _ ->
+
+                val width =
+                    widthInput.text
+                        .toString()
+                        .toIntOrNull()
+
+                val height =
+                    heightInput.text
+                        .toString()
+                        .toIntOrNull()
+
+                if (
+                    width != null &&
+                    height != null &&
+                    width > 0 &&
+                    height > 0
+                ) {
+
+                    selectedRatio =
+                        "${width}×${height}"
+
+                    customRatio = true
+
+                    customRatioView.text =
+                        "✓\n${width}×${height}"
+
+                    updateRatioSelection()
+                }
+            }
+            .show()
     }
 }

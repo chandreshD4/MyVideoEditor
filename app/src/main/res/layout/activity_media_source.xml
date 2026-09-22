@@ -1,80 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:background="#080A10">
-
-    <!-- LEFT CATEGORY BAR -->
+    android:background="#080A0F"
+    android:fillViewport="true"
+    android:scrollbars="none">
 
     <LinearLayout
-        android:layout_width="86dp"
-        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:background="#0E1119"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp">
-
-        <TextView
-            android:id="@+id/sourceAll"
-            android:layout_width="70dp"
-            android:layout_height="76dp"
-            android:gravity="center"
-            android:text="▧&#10;All"
-            android:textColor="#FF4B5C"
-            android:textSize="13sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/sourceVideo"
-            android:layout_width="70dp"
-            android:layout_height="76dp"
-            android:gravity="center"
-            android:text="▣&#10;Video"
-            android:textColor="#D7DBE8"
-            android:textSize="13sp" />
-
-        <TextView
-            android:id="@+id/sourcePhoto"
-            android:layout_width="70dp"
-            android:layout_height="76dp"
-            android:gravity="center"
-            android:text="▧&#10;Image"
-            android:textColor="#D7DBE8"
-            android:textSize="13sp" />
-
-        <TextView
-            android:id="@+id/sourceBackground"
-            android:layout_width="70dp"
-            android:layout_height="76dp"
-            android:gravity="center"
-            android:text="●&#10;Background"
-            android:textColor="#D7DBE8"
-            android:textSize="12sp" />
-
-    </LinearLayout>
-
-
-    <!-- MAIN AREA -->
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical">
-
-        <!-- TOP BAR -->
+        android:paddingStart="22dp"
+        android:paddingEnd="22dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="25dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:orientation="horizontal"
+            android:layout_height="62dp"
             android:gravity="center_vertical"
-            android:paddingStart="22dp"
-            android:paddingEnd="18dp"
-            android:background="#0D1017">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/mediaBack"
@@ -83,211 +30,214 @@
                 android:gravity="center"
                 android:text="‹"
                 android:textColor="#FFFFFF"
-                android:textSize="34sp" />
+                android:textSize="36sp" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="Media"
+                android:paddingStart="8dp"
+                android:text="Media &amp; Background"
                 android:textColor="#FFFFFF"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/mediaSort"
-                android:layout_width="54dp"
-                android:layout_height="48dp"
-                android:gravity="center"
-                android:text="☷"
-                android:textColor="#FFFFFF"
-                android:textSize="25sp" />
-
-            <TextView
                 android:id="@+id/mediaClose"
-                android:layout_width="54dp"
+                android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:gravity="center"
                 android:text="×"
                 android:textColor="#FFFFFF"
-                android:textSize="34sp" />
+                android:textSize="32sp" />
 
         </LinearLayout>
 
-
-        <!-- CATEGORY / FOLDER GRID -->
-
-        <ScrollView
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:fillViewport="true">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Choose media or start with a background"
+            android:textColor="#AEB5C2"
+            android:textSize="15sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="18dp">
+        <TextView
+            android:id="@+id/importButton"
+            android:layout_width="match_parent"
+            android:layout_height="62dp"
+            android:layout_marginTop="18dp"
+            android:background="#202A3A"
+            android:gravity="center"
+            android:text="＋  Import Photo or Video"
+            android:textColor="#FFFFFF"
+            android:textSize="17sp"
+            android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Choose Media"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="Select a video, image or background for your project"
-                    android:textColor="#7F879B"
-                    android:textSize="13sp" />
+            <TextView
+                android:id="@+id/mediaDevice"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:background="#171D27"
+                android:gravity="center"
+                android:text="Video"
+                android:textColor="#DCE2EC"
+                android:textSize="15sp" />
 
+            <TextView
+                android:id="@+id/mediaPhotos"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:background="#171D27"
+                android:gravity="center"
+                android:text="Photo"
+                android:textColor="#DCE2EC"
+                android:textSize="15sp" />
 
-                <!-- ROW 1 -->
+        </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:layout_marginTop="20dp"
-                    android:orientation="horizontal">
+        <TextView
+            android:id="@+id/importedMedia"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
+            android:background="#11161F"
+            android:gravity="center"
+            android:text="＋  Import photo or video"
+            android:textColor="#56D5FF"
+            android:textSize="15sp" />
 
-                    <TextView
-                        android:id="@+id/mediaDevice"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:background="#191D29"
-                        android:gravity="center"
-                        android:text="▣&#10;&#10;Device Videos"
-                        android:textColor="#FFFFFF"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="26dp"
+            android:gravity="center_vertical"
+            android:text="Background Colors"
+            android:textColor="#F1F3F8"
+            android:textSize="19sp"
+            android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/mediaPhotos"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:background="#191D29"
-                        android:gravity="center"
-                        android:text="▧&#10;&#10;Photos"
-                        android:textColor="#FFFFFF"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="3"
+            android:rowCount="2"
+            android:alignmentMode="alignMargins"
+            android:columnOrderPreserved="false">
 
-                    <TextView
-                        android:id="@+id/mediaAssets"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:background="#191D29"
-                        android:gravity="center"
-                        android:text="★&#10;&#10;Assets"
-                        android:textColor="#FFFFFF"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
+            <TextView
+                android:id="@+id/backgroundBlack"
+                android:layout_width="0dp"
+                android:layout_height="105dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:background="#000000"
+                android:gravity="center"
+                android:text="Black"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
-                </LinearLayout>
+            <TextView
+                android:id="@+id/backgroundWhite"
+                android:layout_width="0dp"
+                android:layout_height="105dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:background="#FFFFFF"
+                android:gravity="center"
+                android:text="White"
+                android:textColor="#111111"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/backgroundRed"
+                android:layout_width="0dp"
+                android:layout_height="105dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:background="#FF4D5A"
+                android:gravity="center"
+                android:text="Red"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
-                <!-- ROW 2 -->
+            <TextView
+                android:id="@+id/backgroundGreen"
+                android:layout_width="0dp"
+                android:layout_height="105dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:background="#20B77A"
+                android:gravity="center"
+                android:text="Green"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:layout_marginTop="16dp"
-                    android:orientation="horizontal">
+            <TextView
+                android:id="@+id/backgroundBlue"
+                android:layout_width="0dp"
+                android:layout_height="105dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:background="#3E8BFF"
+                android:gravity="center"
+                android:text="Blue"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/backgroundWhite"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:background="#FFFFFF"
-                        android:gravity="center"
-                        android:text="White"
-                        android:textColor="#222222"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+            <TextView
+                android:id="@+id/backgroundYellow"
+                android:layout_width="0dp"
+                android:layout_height="105dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:background="#FFD83D"
+                android:gravity="center"
+                android:text="Yellow"
+                android:textColor="#171717"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/backgroundBlack"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:background="#000000"
-                        android:gravity="center"
-                        android:text="Black"
-                        android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+        </GridLayout>
 
-                    <TextView
-                        android:id="@+id/backgroundGreen"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:background="#00C853"
-                        android:gravity="center"
-                        android:text="Green"
-                        android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/backgroundSelected"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="Selected: Black"
+            android:textColor="#55D8FF"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/backgroundYellow"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:background="#FFD600"
-                        android:gravity="center"
-                        android:text="Yellow"
-                        android:textColor="#222222"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-
-                <!-- FUTURE ASSETS -->
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="My Assets"
-                    android:textColor="#FFFFFF"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="90dp"
-                    android:layout_marginTop="10dp"
-                    android:background="#121622"
-                    android:gravity="center"
-                    android:text="Your saved assets will appear here"
-                    android:textColor="#737B90"
-                    android:textSize="13sp" />
-
-            </LinearLayout>
-
-        </ScrollView>
+        <TextView
+            android:id="@+id/backgroundDone"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="10dp"
+            android:background="#39C8F0"
+            android:gravity="center"
+            android:text="Continue"
+            android:textColor="#061018"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

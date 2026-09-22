@@ -14,24 +14,60 @@ class MediaSourceActivity : Activity() {
         const val EXTRA_ASPECT_RATIO = "aspect_ratio"
         const val EXTRA_SOURCE_TYPE = "source_type"
         const val EXTRA_BACKGROUND_COLOR = "background_color"
+        const val EXTRA_MEDIA_URI = "media_uri"
+        const val EXTRA_PROJECT_NAME = "project_name"
 
-        const val REQUEST_VIDEO = 201
-        const val REQUEST_IMAGE = 202
+        const val REQUEST_MEDIA = 301
     }
 
     private var aspectRatio = "9:16"
+    private var sourceType = "blank"
+    private var mediaUri: String? = null
+    private var projectName = "New Project"
+
+    private var selectedColor = Color.BLACK
+    private var selectedColorName = "Black"
+
+    private lateinit var importedMedia: TextView
+    private lateinit var backgroundSelected: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(
-            R.layout.activity_media_source
-        )
+        setContentView(R.layout.activity_media_source)
 
         aspectRatio =
             intent.getStringExtra(
                 FormatActivity.EXTRA_ASPECT_RATIO
             ) ?: "9:16"
+
+        projectName =
+            intent.getStringExtra(
+                FormatActivity.EXTRA_PROJECT_NAME
+            ) ?: "New Project"
+
+        sourceType =
+            intent.getStringExtra(
+                EXTRA_SOURCE_TYPE
+            ) ?: "blank"
+
+        mediaUri =
+            intent.getStringExtra(
+                EXTRA_MEDIA_URI
+            )
+
+        importedMedia =
+            findViewById(R.id.importedMedia)
+
+        backgroundSelected =
+            findViewById(R.id.backgroundSelected)
+
+        setupClicks()
+        updateImportedMedia()
+        updateSelectedColor()
+    }
+
+    private fun setupClicks() {
 
         findViewById<TextView>(R.id.mediaBack)
             .setOnClickListener {
@@ -43,19 +79,14 @@ class MediaSourceActivity : Activity() {
                 finish()
             }
 
-        findViewById<TextView>(R.id.sourceVideo)
+        findViewById<TextView>(R.id.importButton)
             .setOnClickListener {
-                openVideoPicker()
-            }
-
-        findViewById<TextView>(R.id.sourcePhoto)
-            .setOnClickListener {
-                openImagePicker()
+                openMediaPicker()
             }
 
         findViewById<TextView>(R.id.mediaDevice)
             .setOnClickListener {
-                openVideoPicker()
+                openMediaPicker()
             }
 
         findViewById<TextView>(R.id.mediaPhotos)
@@ -63,40 +94,150 @@ class MediaSourceActivity : Activity() {
                 openImagePicker()
             }
 
-        findViewById<TextView>(R.id.backgroundWhite)
+        findViewById<TextView>(R.id.backgroundBlack)
             .setOnClickListener {
-                openEditor(
-                    sourceType = "blank",
-                    backgroundColor = Color.WHITE
+                selectColor(
+                    "Black",
+                    Color.BLACK
                 )
             }
 
-        findViewById<TextView>(R.id.backgroundBlack)
+        findViewById<TextView>(R.id.backgroundWhite)
             .setOnClickListener {
-                openEditor(
-                    sourceType = "blank",
-                    backgroundColor = Color.BLACK
+                selectColor(
+                    "White",
+                    Color.WHITE
+                )
+            }
+
+        findViewById<TextView>(R.id.backgroundRed)
+            .setOnClickListener {
+                selectColor(
+                    "Red",
+                    Color.rgb(255, 77, 90)
                 )
             }
 
         findViewById<TextView>(R.id.backgroundGreen)
             .setOnClickListener {
-                openEditor(
-                    sourceType = "blank",
-                    backgroundColor = Color.GREEN
+                selectColor(
+                    "Green",
+                    Color.rgb(32, 183, 122)
+                )
+            }
+
+        findViewById<TextView>(R.id.backgroundBlue)
+            .setOnClickListener {
+                selectColor(
+                    "Blue",
+                    Color.rgb(62, 139, 255)
                 )
             }
 
         findViewById<TextView>(R.id.backgroundYellow)
             .setOnClickListener {
-                openEditor(
-                    sourceType = "blank",
-                    backgroundColor = Color.YELLOW
+                selectColor(
+                    "Yellow",
+                    Color.rgb(255, 216, 61)
                 )
+            }
+
+        findViewById<TextView>(R.id.backgroundDone)
+            .setOnClickListener {
+                continueToEditor()
             }
     }
 
-    private fun openVideoPicker() {
+    private fun selectColor(
+        name: String,
+        color: Int
+    ) {
+        selectedColorName = name
+        selectedColor = color
+        updateSelectedColor()
+    }
+
+    private fun updateSelectedColor() {
+
+        backgroundSelected.text =
+            "Selected: $selectedColorName"
+
+        val colors = listOf(
+            Pair(
+                R.id.backgroundBlack,
+                "Black"
+            ),
+            Pair(
+                R.id.backgroundWhite,
+                "White"
+            ),
+            Pair(
+                R.id.backgroundRed,
+                "Red"
+            ),
+            Pair(
+                R.id.backgroundGreen,
+                "Green"
+            ),
+            Pair(
+                R.id.backgroundBlue,
+                "Blue"
+            ),
+            Pair(
+                R.id.backgroundYellow,
+                "Yellow"
+            )
+        )
+
+        for ((id, name) in colors) {
+
+            val view =
+                findViewById<TextView>(id)
+
+            view.alpha =
+                if (name == selectedColorName) {
+                    1.0f
+                } else {
+                    0.72f
+                }
+
+            view.scaleX =
+                if (name == selectedColorName) {
+                    1.03f
+                } else {
+                    1.0f
+                }
+
+            view.scaleY =
+                if (name == selectedColorName) {
+                    1.03f
+                } else {
+                    1.0f
+                }
+        }
+    }
+
+    private fun updateImportedMedia() {
+
+        if (mediaUri.isNullOrEmpty()) {
+
+            importedMedia.text =
+                "＋  Import photo or video"
+
+            sourceType = "blank"
+
+        } else {
+
+            importedMedia.text =
+                if (sourceType == "video") {
+                    "✓  Video imported"
+                } else {
+                    "✓  Photo imported"
+                }
+        }
+    }
+
+    private fun openMediaPicker() {
 
         val intent =
             Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -105,7 +246,15 @@ class MediaSourceActivity : Activity() {
                     Intent.CATEGORY_OPENABLE
                 )
 
-                type = "video/*"
+                type = "*/*"
+
+                putExtra(
+                    Intent.EXTRA_MIME_TYPES,
+                    arrayOf(
+                        "video/*",
+                        "image/*"
+                    )
+                )
 
                 addFlags(
                     Intent.FLAG_GRANT_READ_URI_PERMISSION or
@@ -115,7 +264,7 @@ class MediaSourceActivity : Activity() {
 
         startActivityForResult(
             intent,
-            REQUEST_VIDEO
+            REQUEST_MEDIA
         )
     }
 
@@ -138,7 +287,7 @@ class MediaSourceActivity : Activity() {
 
         startActivityForResult(
             intent,
-            REQUEST_IMAGE
+            REQUEST_MEDIA
         )
     }
 
@@ -153,11 +302,15 @@ class MediaSourceActivity : Activity() {
             data
         )
 
-        if (resultCode != RESULT_OK) {
+        if (
+            requestCode != REQUEST_MEDIA ||
+            resultCode != RESULT_OK
+        ) {
             return
         }
 
-        val uri = data?.data ?: return
+        val uri =
+            data?.data ?: return
 
         try {
             contentResolver.takePersistableUriPermission(
@@ -167,29 +320,23 @@ class MediaSourceActivity : Activity() {
         } catch (_: SecurityException) {
         }
 
-        when (requestCode) {
+        mediaUri = uri.toString()
 
-            REQUEST_VIDEO -> {
-                openEditor(
-                    sourceType = "video",
-                    mediaUri = uri.toString()
-                )
+        val mime =
+            contentResolver.getType(uri)
+                ?: ""
+
+        sourceType =
+            if (mime.startsWith("video/")) {
+                "video"
+            } else {
+                "image"
             }
 
-            REQUEST_IMAGE -> {
-                openEditor(
-                    sourceType = "image",
-                    mediaUri = uri.toString()
-                )
-            }
-        }
+        updateImportedMedia()
     }
 
-    private fun openEditor(
-        sourceType: String,
-        backgroundColor: Int = Color.TRANSPARENT,
-        mediaUri: String? = null
-    ) {
+    private fun continueToEditor() {
 
         val intent =
             Intent(
@@ -209,20 +356,20 @@ class MediaSourceActivity : Activity() {
 
                 putExtra(
                     EditorActivity.EXTRA_BACKGROUND_COLOR,
-                    backgroundColor
+                    selectedColor
                 )
 
-                if (mediaUri != null) {
+                putExtra(
+                    EditorActivity.EXTRA_PROJECT_NAME,
+                    projectName
+                )
+
+                if (!mediaUri.isNullOrEmpty()) {
                     putExtra(
                         EditorActivity.EXTRA_VIDEO_URI,
                         mediaUri
                     )
                 }
-
-                putExtra(
-                    EditorActivity.EXTRA_PROJECT_NAME,
-                    "New Project"
-                )
             }
 
         startActivity(intent)
