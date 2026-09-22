@@ -24,11 +24,24 @@ class MediaSourceActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_media_source)
+        setContentView(
+            R.layout.activity_media_source
+        )
 
         aspectRatio =
-            intent.getStringExtra(FormatActivity.EXTRA_ASPECT_RATIO)
-                ?: "9:16"
+            intent.getStringExtra(
+                FormatActivity.EXTRA_ASPECT_RATIO
+            ) ?: "9:16"
+
+        findViewById<TextView>(R.id.mediaBack)
+            .setOnClickListener {
+                finish()
+            }
+
+        findViewById<TextView>(R.id.mediaClose)
+            .setOnClickListener {
+                finish()
+            }
 
         findViewById<TextView>(R.id.sourceVideo)
             .setOnClickListener {
@@ -40,7 +53,17 @@ class MediaSourceActivity : Activity() {
                 openImagePicker()
             }
 
-        findViewById<TextView>(R.id.sourceBlank)
+        findViewById<TextView>(R.id.mediaDevice)
+            .setOnClickListener {
+                openVideoPicker()
+            }
+
+        findViewById<TextView>(R.id.mediaPhotos)
+            .setOnClickListener {
+                openImagePicker()
+            }
+
+        findViewById<TextView>(R.id.backgroundWhite)
             .setOnClickListener {
                 openEditor(
                     sourceType = "blank",
@@ -48,24 +71,28 @@ class MediaSourceActivity : Activity() {
                 )
             }
 
-        findViewById<TextView>(R.id.backgroundWhite)
-            .setOnClickListener {
-                openEditor("blank", Color.WHITE)
-            }
-
         findViewById<TextView>(R.id.backgroundBlack)
             .setOnClickListener {
-                openEditor("blank", Color.BLACK)
+                openEditor(
+                    sourceType = "blank",
+                    backgroundColor = Color.BLACK
+                )
             }
 
         findViewById<TextView>(R.id.backgroundGreen)
             .setOnClickListener {
-                openEditor("blank", Color.GREEN)
+                openEditor(
+                    sourceType = "blank",
+                    backgroundColor = Color.GREEN
+                )
             }
 
         findViewById<TextView>(R.id.backgroundYellow)
             .setOnClickListener {
-                openEditor("blank", Color.YELLOW)
+                openEditor(
+                    sourceType = "blank",
+                    backgroundColor = Color.YELLOW
+                )
             }
     }
 
@@ -74,7 +101,9 @@ class MediaSourceActivity : Activity() {
         val intent =
             Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
 
-                addCategory(Intent.CATEGORY_OPENABLE)
+                addCategory(
+                    Intent.CATEGORY_OPENABLE
+                )
 
                 type = "video/*"
 
@@ -95,7 +124,9 @@ class MediaSourceActivity : Activity() {
         val intent =
             Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
 
-                addCategory(Intent.CATEGORY_OPENABLE)
+                addCategory(
+                    Intent.CATEGORY_OPENABLE
+                )
 
                 type = "image/*"
 
@@ -167,17 +198,17 @@ class MediaSourceActivity : Activity() {
             ).apply {
 
                 putExtra(
-                    EXTRA_ASPECT_RATIO,
+                    EditorActivity.EXTRA_ASPECT_RATIO,
                     aspectRatio
                 )
 
                 putExtra(
-                    EXTRA_SOURCE_TYPE,
+                    EditorActivity.EXTRA_SOURCE_TYPE,
                     sourceType
                 )
 
                 putExtra(
-                    EXTRA_BACKGROUND_COLOR,
+                    EditorActivity.EXTRA_BACKGROUND_COLOR,
                     backgroundColor
                 )
 

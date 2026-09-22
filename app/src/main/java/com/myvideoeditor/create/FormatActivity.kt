@@ -17,6 +17,10 @@ class FormatActivity : Activity() {
 
         setContentView(R.layout.activity_format_selection)
 
+        findViewById<TextView>(R.id.formatBack).setOnClickListener {
+            finish()
+        }
+
         findViewById<TextView>(R.id.formatShorts).setOnClickListener {
             chooseFormat("9:16")
         }
@@ -25,16 +29,16 @@ class FormatActivity : Activity() {
             chooseFormat("16:9")
         }
 
-        findViewById<TextView>(R.id.formatInstagram).setOnClickListener {
-            chooseFormat("9:16")
+        findViewById<TextView>(R.id.formatSquare).setOnClickListener {
+            chooseFormat("1:1")
         }
 
         findViewById<TextView>(R.id.formatFacebook).setOnClickListener {
-            chooseFormat("9:16")
+            chooseFormat("4:5")
         }
 
-        findViewById<TextView>(R.id.formatSquare).setOnClickListener {
-            chooseFormat("1:1")
+        findViewById<TextView>(R.id.formatInstagram).setOnClickListener {
+            chooseFormat("3:4")
         }
 
         findViewById<TextView>(R.id.formatCustom).setOnClickListener {
@@ -48,7 +52,6 @@ class FormatActivity : Activity() {
             this,
             MediaSourceActivity::class.java
         ).apply {
-
             putExtra(
                 EXTRA_ASPECT_RATIO,
                 aspectRatio
@@ -56,6 +59,5 @@ class FormatActivity : Activity() {
         }
 
         startActivity(intent)
-        finish()
     }
 }

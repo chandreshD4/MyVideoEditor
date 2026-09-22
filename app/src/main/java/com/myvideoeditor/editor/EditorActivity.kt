@@ -3,15 +3,12 @@ package com.myvideoeditor.editor
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.HorizontalScrollView
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.VideoView
@@ -28,14 +25,14 @@ class EditorActivity : Activity() {
         const val EXTRA_BACKGROUND_COLOR = "background_color"
     }
 
-    private lateinit var previewContainer: FrameLayout
-    private lateinit var timelineScroll: HorizontalScrollView
-    private lateinit var timelineContent: LinearLayout
+    private lateinit var videoView: VideoView
+    private lateinit var playButton: TextView
+    private lateinit var timelineTrack: LinearLayout
 
-    private var aspectRatio = "9:16"
     private var sourceType = "blank"
-    private var backgroundColor = Color.WHITE
+    private var aspectRatio = "9:16"
     private var mediaUri: String? = null
+    private var backgroundColor = Color.BLACK
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,19 +41,21 @@ class EditorActivity : Activity() {
             ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
         aspectRatio =
-            intent.getStringExtra(EXTRA_ASPECT_RATIO) ?: "9:16"
+            intent.getStringExtra(EXTRA_ASPECT_RATIO)
+                ?: "9:16"
 
         sourceType =
-            intent.getStringExtra(EXTRA_SOURCE_TYPE) ?: "blank"
+            intent.getStringExtra(EXTRA_SOURCE_TYPE)
+                ?: "blank"
+
+        mediaUri =
+            intent.getStringExtra(EXTRA_VIDEO_URI)
 
         backgroundColor =
             intent.getIntExtra(
                 EXTRA_BACKGROUND_COLOR,
-                Color.WHITE
+                Color.BLACK
             )
-
-        mediaUri =
-            intent.getStringExtra(EXTRA_VIDEO_URI)
 
         buildEditor()
     }
@@ -65,7 +64,7 @@ class EditorActivity : Activity() {
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.rgb(7, 9, 16))
+            setBackgroundColor(Color.rgb(7, 9, 15))
         }
 
         root.addView(
@@ -78,35 +77,40 @@ class EditorActivity : Activity() {
 
         val workspace = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setBackgroundColor(Color.rgb(10, 12, 20))
         }
 
         workspace.addView(
-            createToolBar(true),
+            createLeftTools(),
             LinearLayout.LayoutParams(
-                62.dp(),
+                72.dp(),
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
         )
 
-        previewContainer = FrameLayout(this).apply {
-            setBackgroundColor(Color.BLACK)
+        val center = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(Color.rgb(12, 14, 21))
         }
 
-        val previewHolder = FrameLayout(this)
-
-        setupPreview(previewHolder)
-
-        previewContainer.addView(
-            previewHolder,
-            FrameLayout.LayoutParams(
+        center.addView(
+            createPreview(),
+            LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
+                0,
+                1f
+            )
+        )
+
+        center.addView(
+            createPreviewControls(),
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                48.dp()
             )
         )
 
         workspace.addView(
-            previewContainer,
+            center,
             LinearLayout.LayoutParams(
                 0,
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -115,9 +119,9 @@ class EditorActivity : Activity() {
         )
 
         workspace.addView(
-            createToolBar(false),
+            createRightTools(),
             LinearLayout.LayoutParams(
-                62.dp(),
+                72.dp(),
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
         )
@@ -132,10 +136,10 @@ class EditorActivity : Activity() {
         )
 
         root.addView(
-            createTimelineArea(),
+            createTimeline(),
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                220.dp()
+                180.dp()
             )
         )
 
@@ -146,12 +150,17 @@ class EditorActivity : Activity() {
 
         val bar = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setGravity(Gravity.CENTER_VERTICAL)
-            setBackgroundColor(Color.rgb(15, 18, 30))
-            setPadding(10.dp(), 0, 10.dp(), 0)
+            gravity = Gravity.CENTER_VERTICAL
+            setBackgroundColor(Color.rgb(15, 18, 27))
+            setPadding(
+                8.dp(),
+                0,
+                8.dp(),
+                0
+            )
         }
 
-        val back = button("‹", 28)
+        val back = toolButton("‹", 28)
 
         back.setOnClickListener {
             finish()
@@ -161,7 +170,7 @@ class EditorActivity : Activity() {
             back,
             LinearLayout.LayoutParams(
                 48.dp(),
-                ViewGroup.LayoutParams.MATCH_PARENT
+                48.dp()
             )
         )
 
@@ -169,7 +178,7 @@ class EditorActivity : Activity() {
             text = "New Project"
             setTextColor(Color.WHITE)
             textSize = 16f
-            setGravity(Gravity.CENTER_VERTICAL)
+            gravity = Gravity.CENTER_VERTICAL
         }
 
         bar.addView(
@@ -181,41 +190,54 @@ class EditorActivity : Activity() {
             )
         )
 
-        val undo = button("↶", 20)
-        val redo = button("↷", 20)
+        val ratio = TextView(this).apply {
+            text = aspectRatio
+            setTextColor(Color.LTGRAY)
+            textSize = 12f
+            gravity = Gravity.CENTER
+        }
+
+        bar.addView(
+            ratio,
+            LinearLayout.LayoutParams(
+                70.dp(),
+                48.dp()
+            )
+        )
+
+        val undo = toolButton("↶", 20)
+        val redo = toolButton("↷", 20)
 
         bar.addView(
             undo,
             LinearLayout.LayoutParams(
-                48.dp(),
-                ViewGroup.LayoutParams.MATCH_PARENT
+                45.dp(),
+                48.dp()
             )
         )
 
         bar.addView(
             redo,
             LinearLayout.LayoutParams(
-                48.dp(),
-                ViewGroup.LayoutParams.MATCH_PARENT
+                45.dp(),
+                48.dp()
             )
         )
 
         val export = TextView(this).apply {
             text = "EXPORT"
             setTextColor(Color.WHITE)
-            textSize = 13f
-            setGravity(Gravity.CENTER)
-            setPadding(14.dp(), 0, 14.dp(), 0)
-            background = rounded(
-                Color.rgb(70, 80, 220),
-                10
+            textSize = 12f
+            gravity = Gravity.CENTER
+            setBackgroundColor(
+                Color.rgb(76, 82, 210)
             )
         }
 
         bar.addView(
             export,
             LinearLayout.LayoutParams(
-                90.dp(),
+                82.dp(),
                 38.dp()
             )
         )
@@ -223,91 +245,189 @@ class EditorActivity : Activity() {
         return bar
     }
 
-    private fun setupPreview(holder: FrameLayout) {
+    private fun createPreview(): View {
 
-        when (sourceType) {
-
-            "video" -> {
-                val video = VideoView(this)
-
-                if (!mediaUri.isNullOrEmpty()) {
-                    video.setVideoURI(Uri.parse(mediaUri))
-                }
-
-                holder.addView(
-                    video,
-                    centeredPreviewParams()
-                )
-            }
-
-            "image" -> {
-                val image = ImageView(this).apply {
-                    if (!mediaUri.isNullOrEmpty()) {
-                        setImageURI(Uri.parse(mediaUri))
-                    }
-                    scaleType =
-                        ImageView.ScaleType.FIT_CENTER
-                }
-
-                holder.addView(
-                    image,
-                    centeredPreviewParams()
-                )
-            }
-
-            else -> {
-                holder.setBackgroundColor(
-                    backgroundColor
-                )
-
-                val text = TextView(this).apply {
-                    text = aspectRatio
-                    setTextColor(Color.GRAY)
-                    textSize = 13f
-                    setGravity(Gravity.CENTER)
-                }
-
-                holder.addView(
-                    text,
-                    centeredPreviewParams()
-                )
-            }
+        val frame = FrameLayout(this).apply {
+            setBackgroundColor(
+                Color.rgb(4, 5, 8)
+            )
         }
+
+        if (sourceType == "video" &&
+            !mediaUri.isNullOrEmpty()
+        ) {
+
+            videoView = VideoView(this)
+
+            videoView.setVideoURI(
+                Uri.parse(mediaUri)
+            )
+
+            frame.addView(
+                videoView,
+                FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                ).apply {
+                    gravity = Gravity.CENTER
+                }
+            )
+
+        } else if (
+            sourceType == "image" &&
+            !mediaUri.isNullOrEmpty()
+        ) {
+
+            val image =
+                android.widget.ImageView(this).apply {
+
+                    setImageURI(
+                        Uri.parse(mediaUri)
+                    )
+
+                    scaleType =
+                        android.widget.ImageView.ScaleType
+                            .FIT_CENTER
+                }
+
+            frame.addView(
+                image,
+                FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+            )
+
+        } else {
+
+            frame.setBackgroundColor(
+                backgroundColor
+            )
+
+            val emptyText = TextView(this).apply {
+                text = "No media selected"
+                setTextColor(
+                    Color.argb(
+                        150,
+                        255,
+                        255,
+                        255
+                    )
+                )
+                textSize = 14f
+                gravity = Gravity.CENTER
+            }
+
+            frame.addView(
+                emptyText,
+                FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+            )
+        }
+
+        return frame
     }
 
-    private fun centeredPreviewParams():
-        FrameLayout.LayoutParams {
+    private fun createPreviewControls(): View {
 
-        return FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        ).apply {
+        val bar = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            setBackgroundColor(
+                Color.rgb(10, 12, 18)
+            )
+        }
+
+        playButton = toolButton("▶", 20)
+
+        playButton.setOnClickListener {
+
+            if (::videoView.isInitialized) {
+
+                if (videoView.isPlaying) {
+                    videoView.pause()
+                    playButton.text = "▶"
+                } else {
+                    videoView.start()
+                    playButton.text = "Ⅱ"
+                }
+            }
+        }
+
+        bar.addView(
+            playButton,
+            LinearLayout.LayoutParams(
+                55.dp(),
+                45.dp()
+            )
+        )
+
+        val time = TextView(this).apply {
+            text = "00:00 / 00:00"
+            setTextColor(Color.LTGRAY)
+            textSize = 11f
             gravity = Gravity.CENTER
         }
+
+        bar.addView(
+            time,
+            LinearLayout.LayoutParams(
+                120.dp(),
+                45.dp()
+            )
+        )
+
+        return bar
     }
 
-    private fun createToolBar(left: Boolean): View {
+    private fun createLeftTools(): View {
 
         val bar = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setGravity(Gravity.CENTER)
-            setBackgroundColor(Color.rgb(13, 16, 27))
-            setPadding(5.dp(), 8.dp(), 5.dp(), 8.dp())
+            gravity = Gravity.CENTER
+            setBackgroundColor(
+                Color.rgb(14, 17, 25)
+            )
+            setPadding(
+                5.dp(),
+                8.dp(),
+                5.dp(),
+                8.dp()
+            )
         }
 
-        if (left) {
-            addTool(bar, "Media")
-            addTool(bar, "Layer")
-            addTool(bar, "Text")
-            addTool(bar, "Audio")
-            addTool(bar, "Voice")
-        } else {
-            addTool(bar, "Crop")
-            addTool(bar, "Speed")
-            addTool(bar, "Filter")
-            addTool(bar, "Effect")
-            addTool(bar, "More")
+        addTool(bar, "Media")
+        addTool(bar, "Layer")
+        addTool(bar, "Text")
+        addTool(bar, "Audio")
+        addTool(bar, "Voice")
+
+        return bar
+    }
+
+    private fun createRightTools(): View {
+
+        val bar = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setBackgroundColor(
+                Color.rgb(14, 17, 25)
+            )
+            setPadding(
+                5.dp(),
+                8.dp(),
+                5.dp(),
+                8.dp()
+            )
         }
+
+        addTool(bar, "Crop")
+        addTool(bar, "Speed")
+        addTool(bar, "Filter")
+        addTool(bar, "Effect")
+        addTool(bar, "More")
 
         return bar
     }
@@ -317,280 +437,186 @@ class EditorActivity : Activity() {
         name: String
     ) {
 
-        val item = TextView(this).apply {
+        val button = TextView(this).apply {
             text = name
             setTextColor(Color.WHITE)
             textSize = 10f
-            setGravity(Gravity.CENTER)
-            background = rounded(
-                Color.rgb(24, 28, 43),
-                8
+            gravity = Gravity.CENTER
+            setBackgroundColor(
+                Color.rgb(25, 29, 42)
             )
         }
 
         val params =
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                48.dp()
+                45.dp()
             )
 
         params.setMargins(
             2.dp(),
-            4.dp(),
+            3.dp(),
             2.dp(),
-            4.dp()
+            3.dp()
         )
 
-        parent.addView(item, params)
+        parent.addView(
+            button,
+            params
+        )
     }
 
-    private fun createTimelineArea(): View {
+    private fun createTimeline(): View {
 
-        val area = FrameLayout(this).apply {
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
             setBackgroundColor(
-                Color.rgb(12, 15, 25)
+                Color.rgb(9, 12, 19)
             )
         }
 
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setGravity(Gravity.CENTER)
+            gravity = Gravity.CENTER_VERTICAL
             setBackgroundColor(
-                Color.rgb(18, 22, 35)
+                Color.rgb(17, 20, 30)
             )
         }
 
-        val zoomOut = button("−", 20)
-
-        val zoomText = TextView(this).apply {
-            text = "100%"
+        val timelineTitle = TextView(this).apply {
+            text = "Timeline"
             setTextColor(Color.WHITE)
-            setGravity(Gravity.CENTER)
-            textSize = 11f
+            textSize = 13f
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(
+                14.dp(),
+                0,
+                0,
+                0
+            )
         }
 
-        val zoomIn = button("+", 20)
-
         header.addView(
-            zoomOut,
+            timelineTitle,
             LinearLayout.LayoutParams(
-                45.dp(),
-                ViewGroup.LayoutParams.MATCH_PARENT
+                0,
+                40.dp(),
+                1f
             )
         )
 
-        header.addView(
-            zoomText,
-            LinearLayout.LayoutParams(
-                60.dp(),
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        )
+        val minus = toolButton("−", 18)
+        val zoom = TextView(this).apply {
+            text = "100%"
+            setTextColor(Color.LTGRAY)
+            textSize = 10f
+            gravity = Gravity.CENTER
+        }
+        val plus = toolButton("+", 18)
 
         header.addView(
-            zoomIn,
+            minus,
             LinearLayout.LayoutParams(
-                45.dp(),
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        )
-
-        area.addView(
-            header,
-            FrameLayout.LayoutParams(
-                150.dp(),
+                42.dp(),
                 40.dp()
             )
         )
 
-        timelineScroll =
-            HorizontalScrollView(this).apply {
-                isHorizontalScrollBarEnabled = false
-                setBackgroundColor(
-                    Color.rgb(9, 12, 20)
-                )
-            }
-
-        timelineContent =
-            LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                setPadding(
-                    180.dp(),
-                    8.dp(),
-                    180.dp(),
-                    8.dp()
-                )
-            }
-
-        addTimelineTrack(
-            "VIDEO",
-            Color.rgb(45, 75, 125)
-        )
-
-        addTimelineTrack(
-            "TEXT",
-            Color.rgb(80, 55, 105)
-        )
-
-        addTimelineTrack(
-            "AUDIO",
-            Color.rgb(45, 105, 75)
-        )
-
-        timelineScroll.addView(
-            timelineContent,
-            ViewGroup.LayoutParams(
-                1800.dp(),
-                ViewGroup.LayoutParams.MATCH_PARENT
+        header.addView(
+            zoom,
+            LinearLayout.LayoutParams(
+                50.dp(),
+                40.dp()
             )
         )
 
-        val scrollParams =
-            FrameLayout.LayoutParams(
+        header.addView(
+            plus,
+            LinearLayout.LayoutParams(
+                42.dp(),
+                40.dp()
+            )
+        )
+
+        container.addView(
+            header,
+            LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
+                40.dp()
             )
-
-        scrollParams.topMargin = 40.dp()
-
-        area.addView(
-            timelineScroll,
-            scrollParams
         )
 
-        val playhead = View(this).apply {
-            setBackgroundColor(Color.RED)
-        }
+        val scroll =
+            android.widget.HorizontalScrollView(this).apply {
+                isHorizontalScrollBarEnabled = false
+            }
 
-        val playheadParams =
-            FrameLayout.LayoutParams(
-                2.dp(),
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-
-        playheadParams.gravity =
-            Gravity.CENTER_HORIZONTAL
-
-        playheadParams.topMargin = 40.dp()
-
-        area.addView(
-            playhead,
-            playheadParams
-        )
-
-        zoomOut.setOnClickListener {
-            zoomText.text = "75%"
-        }
-
-        zoomIn.setOnClickListener {
-            zoomText.text = "125%"
-        }
-
-        return area
-    }
-
-    private fun addTimelineTrack(
-        name: String,
-        color: Int
-    ) {
-
-        val row = LinearLayout(this).apply {
+        timelineTrack = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setGravity(Gravity.CENTER_VERTICAL)
-        }
-
-        val label = TextView(this).apply {
-            text = name
-            setTextColor(Color.WHITE)
-            textSize = 10f
-            setGravity(Gravity.CENTER)
-            background = rounded(
-                Color.rgb(25, 29, 42),
-                6
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(
+                120.dp(),
+                10.dp(),
+                120.dp(),
+                10.dp()
             )
         }
 
-        row.addView(
-            label,
-            LinearLayout.LayoutParams(
-                80.dp(),
-                48.dp()
-            )
-        )
+        if (sourceType == "video") {
 
-        val clip = TextView(this).apply {
-            text =
-                if (name == "VIDEO") {
-                    "  Video Clip  "
-                } else {
-                    "  $name Track  "
-                }
+            val clip = TextView(this).apply {
+                text = "VIDEO"
+                setTextColor(Color.WHITE)
+                textSize = 11f
+                gravity = Gravity.CENTER
+                setBackgroundColor(
+                    Color.rgb(50, 82, 140)
+                )
+            }
 
-            setTextColor(Color.WHITE)
-            textSize = 12f
-            setGravity(Gravity.CENTER_VERTICAL)
-            background = rounded(
-                color,
-                8
+            timelineTrack.addView(
+                clip,
+                LinearLayout.LayoutParams(
+                    500.dp(),
+                    70.dp()
+                )
             )
         }
 
-        val clipParams =
+        scroll.addView(
+            timelineTrack,
             LinearLayout.LayoutParams(
-                520.dp(),
-                48.dp()
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
             )
-
-        clipParams.setMargins(
-            12.dp(),
-            0,
-            0,
-            0
         )
 
-        row.addView(
-            clip,
-            clipParams
-        )
-
-        val params =
+        container.addView(
+            scroll,
             LinearLayout.LayoutParams(
-                1800.dp(),
-                52.dp()
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                140.dp()
             )
-
-        timelineContent.addView(
-            row,
-            params
         )
+
+        return container
     }
 
-    private fun button(
-        textValue: String,
+    private fun toolButton(
+        value: String,
         size: Int
     ): TextView {
 
         return TextView(this).apply {
-            text = textValue
+            text = value
             setTextColor(Color.WHITE)
             textSize = size.toFloat()
-            setGravity(Gravity.CENTER)
-        }
-    }
-
-    private fun rounded(
-        color: Int,
-        radius: Int
-    ): GradientDrawable {
-
-        return GradientDrawable().apply {
-            setColor(color)
-            cornerRadius =
-                radius.dp().toFloat()
+            gravity = Gravity.CENTER
         }
     }
 
     private fun Int.dp(): Int {
+
         return (
             this *
                 resources.displayMetrics.density
