@@ -154,7 +154,7 @@ class FormatActivity : Activity() {
             showCustomSizeDialog()
         }
 
-        findViewById<TextView>(R.id.advancedHeader)
+        findViewById<View>(R.id.advancedHeader)
             .setOnClickListener {
                 toggleAdvanced()
             }
