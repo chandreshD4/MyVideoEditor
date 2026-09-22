@@ -3,18 +3,23 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#080A12"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="#080A10">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:paddingStart="22dp"
+        android:paddingEnd="22dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="24dp">
+
+        <!-- TOP BAR -->
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="56dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -23,192 +28,460 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:gravity="center"
-                android:text="‹"
+                android:text="×"
                 android:textColor="#FFFFFF"
                 android:textSize="34sp" />
 
-            <LinearLayout
+            <Space
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/formatImport"
+                android:layout_width="112dp"
+                android:layout_height="44dp"
+                android:background="#202532"
+                android:gravity="center"
+                android:text="⇩  Import"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <!-- PROJECT NAME -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Project name"
+            android:textColor="#E6E8EF"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/projectName"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="10dp"
+            android:background="#242832"
+            android:hint="Enter project name"
+            android:hintTextColor="#777D89"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:singleLine="true"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#777D89"
+            android:textSize="16sp" />
+
+        <!-- ASPECT RATIO -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="34dp"
+            android:text="Aspect ratio"
+            android:textColor="#E6E8EF"
+            android:textSize="19sp" />
+
+        <!-- FIRST ROW -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="128dp"
+            android:layout_marginTop="18dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/formatYouTube"
+                android:layout_width="0dp"
+                android:layout_height="112dp"
                 android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="vertical">
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="#202533"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:background="#11151E"
+                    android:gravity="center"
+                    android:text="▭"
+                    android:textColor="#58D8FF"
+                    android:textSize="28sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Create New Video"
-                    android:textColor="#FFFFFF"
-                    android:textSize="22sp"
+                    android:layout_marginTop="8dp"
+                    android:text="16:9"
+                    android:textColor="#58D8FF"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
 
+            </LinearLayout>
+
+            <Space
+                android:layout_width="14dp"
+                android:layout_height="1dp" />
+
+            <LinearLayout
+                android:id="@+id/formatShorts"
+                android:layout_width="0dp"
+                android:layout_height="112dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="42dp"
+                    android:layout_height="64dp"
+                    android:background="#11151E"
+                    android:gravity="center"
+                    android:text="▯"
+                    android:textColor="#B5BAC5"
+                    android:textSize="30sp" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Choose your project format"
-                    android:textColor="#8F96AA"
-                    android:textSize="12sp" />
+                    android:layout_marginTop="5dp"
+                    android:text="9:16"
+                    android:textColor="#B5BAC5"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="14dp"
+                android:layout_height="1dp" />
+
+            <LinearLayout
+                android:id="@+id/formatSquare"
+                android:layout_width="0dp"
+                android:layout_height="112dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="58dp"
+                    android:layout_height="58dp"
+                    android:background="#11151E"
+                    android:gravity="center"
+                    android:text="□"
+                    android:textColor="#B5BAC5"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="1:1"
+                    android:textColor="#B5BAC5"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="14dp"
+                android:layout_height="1dp" />
+
+            <LinearLayout
+                android:id="@+id/format43"
+                android:layout_width="0dp"
+                android:layout_height="112dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="62dp"
+                    android:layout_height="47dp"
+                    android:background="#11151E"
+                    android:gravity="center"
+                    android:text="▭"
+                    android:textColor="#B5BAC5"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:text="4:3"
+                    android:textColor="#B5BAC5"
+                    android:textSize="15sp" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Aspect Ratio"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="Select the frame size for your video"
-            android:textColor="#7F879B"
-            android:textSize="13sp" />
+        <!-- SECOND ROW -->
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_height="120dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/formatYouTube"
+            <LinearLayout
+                android:id="@+id/format34"
                 android:layout_width="0dp"
-                android:layout_height="150dp"
-                android:layout_marginEnd="8dp"
+                android:layout_height="108dp"
                 android:layout_weight="1"
-                android:background="#171B2A"
                 android:gravity="center"
-                android:padding="12dp"
-                android:text="16:9&#10;&#10;YouTube Video"
-                android:textColor="#FFFFFF"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/formatShorts"
+                <TextView
+                    android:layout_width="46dp"
+                    android:layout_height="62dp"
+                    android:background="#11151E"
+                    android:gravity="center"
+                    android:text="▯"
+                    android:textColor="#B5BAC5"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="3:4"
+                    android:textColor="#B5BAC5"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="14dp"
+                android:layout_height="1dp" />
+
+            <LinearLayout
+                android:id="@+id/format45"
                 android:layout_width="0dp"
-                android:layout_height="150dp"
-                android:layout_marginStart="8dp"
+                android:layout_height="108dp"
                 android:layout_weight="1"
-                android:background="#171B2A"
                 android:gravity="center"
-                android:padding="12dp"
-                android:text="9:16&#10;&#10;Shorts / Reels"
-                android:textColor="#FFFFFF"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="52dp"
+                    android:layout_height="64dp"
+                    android:background="#11151E"
+                    android:gravity="center"
+                    android:text="▯"
+                    android:textColor="#B5BAC5"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="4:5"
+                    android:textColor="#B5BAC5"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="14dp"
+                android:layout_height="1dp" />
+
+            <LinearLayout
+                android:id="@+id/formatCinema"
+                android:layout_width="0dp"
+                android:layout_height="108dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="78dp"
+                    android:layout_height="34dp"
+                    android:background="#11151E"
+                    android:gravity="center"
+                    android:text="▬"
+                    android:textColor="#B5BAC5"
+                    android:textSize="26sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:text="2.35:1"
+                    android:textColor="#B5BAC5"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="14dp"
+                android:layout_height="1dp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/formatSquare"
-                android:layout_width="0dp"
-                android:layout_height="130dp"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:background="#171B2A"
-                android:gravity="center"
-                android:text="1:1&#10;&#10;Square"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/formatFacebook"
-                android:layout_width="0dp"
-                android:layout_height="130dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:background="#171B2A"
-                android:gravity="center"
-                android:text="4:5&#10;&#10;Facebook"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/formatInstagram"
-                android:layout_width="0dp"
-                android:layout_height="130dp"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:background="#171B2A"
-                android:gravity="center"
-                android:text="3:4&#10;&#10;Portrait"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/formatCustom"
-                android:layout_width="0dp"
-                android:layout_height="110dp"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:background="#171B2A"
-                android:gravity="center"
-                android:text="CUSTOM&#10;&#10;Custom Size"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="110dp"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:background="#10131F"
-                android:gravity="center"
-                android:text="2.35:1&#10;&#10;Cinema"
-                android:textColor="#777F94"
-                android:textSize="14sp" />
-
-        </LinearLayout>
+        <!-- ADVANCED -->
 
         <TextView
+            android:id="@+id/advancedTitle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="More formats"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_marginTop="10dp"
-            android:background="#121622"
+            android:layout_height="52dp"
             android:gravity="center_vertical"
-            android:paddingStart="20dp"
-            android:text="Choose a custom canvas size"
-            android:textColor="#B8BED0"
-            android:textSize="14sp" />
+            android:text="Advanced  ˄"
+            android:textColor="#E6E8EF"
+            android:textSize="18sp" />
 
-        <Space
+        <LinearLayout
+            android:id="@+id/advancedPanel"
             android:layout_width="match_parent"
-            android:layout_height="24dp" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Photo display mode"
+                android:textColor="#E6E8EF"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginTop="14dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/photoFit"
+                    android:layout_width="105dp"
+                    android:layout_height="104dp"
+                    android:background="#202533"
+                    android:gravity="center"
+                    android:text="▧\n\nFit"
+                    android:textColor="#58D8FF"
+                    android:textSize="14sp" />
+
+                <Space
+                    android:layout_width="24dp"
+                    android:layout_height="1dp" />
+
+                <TextView
+                    android:id="@+id/photoFill"
+                    android:layout_width="105dp"
+                    android:layout_height="104dp"
+                    android:gravity="center"
+                    android:text="▧\n\nFill"
+                    android:textColor="#B5BAC5"
+                    android:textSize="14sp" />
+
+                <Space
+                    android:layout_width="24dp"
+                    android:layout_height="1dp" />
+
+                <TextView
+                    android:id="@+id/photoAuto"
+                    android:layout_width="105dp"
+                    android:layout_height="104dp"
+                    android:gravity="center"
+                    android:text="●\n\nAuto"
+                    android:textColor="#B5BAC5"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <!-- PHOTO DURATION -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Default photo duration"
+                    android:textColor="#E6E8EF"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/photoDurationValue"
+                    android:layout_width="45dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="4.5"
+                    android:textColor="#58D8FF"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/photoDurationSeek"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:max="90"
+                android:progress="35" />
+
+            <!-- TRANSITION DURATION -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Default transition duration"
+                    android:textColor="#E6E8EF"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/transitionDurationValue"
+                    android:layout_width="45dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="1.5"
+                    android:textColor="#58D8FF"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/transitionDurationSeek"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:max="50"
+                android:progress="15" />
+
+        </LinearLayout>
+
+        <!-- CREATE -->
+
+        <TextView
+            android:id="@+id/formatCreate"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginTop="20dp"
+            android:background="#35C9F4"
+            android:gravity="center"
+            android:text="Create"
+            android:textColor="#061018"
+            android:textSize="17sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
