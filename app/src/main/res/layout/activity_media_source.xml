@@ -12,8 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         android:paddingTop="8dp"
         android:paddingBottom="20dp">
 
@@ -58,8 +58,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Select media, background or another source"
+            android:layout_marginTop="2dp"
+            android:text="Choose your media source"
             android:textColor="#9EA6B5"
             android:textSize="14sp" />
 
@@ -68,96 +68,96 @@
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="14dp"
             android:columnCount="3"
             android:rowCount="2"
             android:alignmentMode="alignMargins"
             android:columnOrderPreserved="false">
 
-            <!-- BOX 1 : MEDIA -->
+            <!-- 1 MEDIA -->
 
             <TextView
                 android:id="@+id/importButton"
                 android:layout_width="0dp"
-                android:layout_height="118dp"
+                android:layout_height="116dp"
                 android:layout_columnWeight="1"
                 android:layout_margin="5dp"
-                android:background="#18283A"
+                android:background="#182D3F"
                 android:gravity="center"
                 android:text="▣&#10;MEDIA&#10;Photo &amp; Video"
                 android:textColor="#5DD7FF"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <!-- BOX 2 : COLORS -->
+            <!-- 2 COLORS -->
 
             <TextView
                 android:id="@+id/colorsBox"
                 android:layout_width="0dp"
-                android:layout_height="118dp"
+                android:layout_height="116dp"
                 android:layout_columnWeight="1"
                 android:layout_margin="5dp"
-                android:background="#302719"
+                android:background="#3A2E17"
                 android:gravity="center"
                 android:text="●&#10;COLORS&#10;Background"
                 android:textColor="#FFD75A"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <!-- BOX 3 -->
+            <!-- 3 DEVICE -->
 
             <TextView
                 android:id="@+id/mediaDevice"
                 android:layout_width="0dp"
-                android:layout_height="118dp"
+                android:layout_height="116dp"
                 android:layout_columnWeight="1"
                 android:layout_margin="5dp"
-                android:background="#211C35"
+                android:background="#29203D"
                 android:gravity="center"
                 android:text="▤&#10;DEVICE&#10;Files"
-                android:textColor="#C7A8FF"
+                android:textColor="#C9A8FF"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <!-- BOX 4 -->
+            <!-- 4 PHOTOS -->
 
             <TextView
                 android:id="@+id/mediaPhotos"
                 android:layout_width="0dp"
-                android:layout_height="118dp"
+                android:layout_height="116dp"
                 android:layout_columnWeight="1"
                 android:layout_margin="5dp"
-                android:background="#203228"
+                android:background="#203A2D"
                 android:gravity="center"
                 android:text="▧&#10;PHOTOS&#10;Gallery"
                 android:textColor="#72E6A7"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <!-- BOX 5 -->
+            <!-- 5 AUDIO -->
 
             <TextView
                 android:id="@+id/boxFive"
                 android:layout_width="0dp"
-                android:layout_height="118dp"
+                android:layout_height="116dp"
                 android:layout_columnWeight="1"
                 android:layout_margin="5dp"
-                android:background="#34202A"
+                android:background="#3A202C"
                 android:gravity="center"
                 android:text="♫&#10;AUDIO&#10;Music"
                 android:textColor="#FF91B0"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <!-- BOX 6 -->
+            <!-- 6 MORE -->
 
             <TextView
                 android:id="@+id/boxSix"
                 android:layout_width="0dp"
-                android:layout_height="118dp"
+                android:layout_height="116dp"
                 android:layout_columnWeight="1"
                 android:layout_margin="5dp"
-                android:background="#202E34"
+                android:background="#20343A"
                 android:gravity="center"
                 android:text="＋&#10;MORE&#10;Sources"
                 android:textColor="#70DDE8"
@@ -166,136 +166,66 @@
 
         </GridLayout>
 
-        <!-- IMPORTED MEDIA -->
+        <!-- AUTOMATIC MEDIA AREA -->
 
         <TextView
-            android:id="@+id/importedMedia"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="14dp"
-            android:background="#11161F"
-            android:gravity="center"
-            android:text="No media selected"
-            android:textColor="#55D8FF"
-            android:textSize="14sp" />
-
-        <!-- COLOR SECTION -->
-
-        <TextView
-            android:id="@+id/colorsTitle"
             android:layout_width="match_parent"
             android:layout_height="44dp"
+            android:layout_marginTop="14dp"
             android:gravity="center_vertical"
-            android:layout_marginTop="16dp"
-            android:text="Colors"
+            android:text="Your Media"
             android:textColor="#F1F3F8"
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <GridLayout
-            android:id="@+id/colorGrid"
+        <TextView
+            android:id="@+id/mediaEmptyText"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginTop="4dp"
+            android:background="#11161F"
+            android:gravity="center"
+            android:text="Loading photos and videos..."
+            android:textColor="#8F98A8"
+            android:textSize="14sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/mediaFoldersRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="3"
-            android:rowCount="2"
-            android:alignmentMode="alignMargins"
-            android:columnOrderPreserved="false">
-            <TextView
-                android:id="@+id/backgroundBlack"
-                android:layout_width="0dp"
-                android:layout_height="78dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="5dp"
-                android:background="#000000"
-                android:gravity="center"
-                android:text="Black"
-                android:textColor="#FFFFFF"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+            android:layout_marginTop="6dp"
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never" />
 
-            <TextView
-                android:id="@+id/backgroundWhite"
-                android:layout_width="0dp"
-                android:layout_height="78dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="5dp"
-                android:background="#FFFFFF"
-                android:gravity="center"
-                android:text="White"
-                android:textColor="#111111"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+        <!-- CURRENTLY SELECTED MEDIA -->
 
-            <TextView
-                android:id="@+id/backgroundRed"
-                android:layout_width="0dp"
-                android:layout_height="78dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="5dp"
-                android:background="#FF4D5A"
-                android:gravity="center"
-                android:text="Red"
-                android:textColor="#FFFFFF"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/importedMedia"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="12dp"
+            android:background="#11161F"
+            android:gravity="center"
+            android:text="No media selected"
+            android:textColor="#55D8FF"
+            android:textSize="13sp" />
 
-            <TextView
-                android:id="@+id/backgroundGreen"
-                android:layout_width="0dp"
-                android:layout_height="78dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="5dp"
-                android:background="#20B77A"
-                android:gravity="center"
-                android:text="Green"
-                android:textColor="#FFFFFF"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/backgroundBlue"
-                android:layout_width="0dp"
-                android:layout_height="78dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="5dp"
-                android:background="#3E8BFF"
-                android:gravity="center"
-                android:text="Blue"
-                android:textColor="#FFFFFF"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/backgroundYellow"
-                android:layout_width="0dp"
-                android:layout_height="78dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="5dp"
-                android:background="#FFD83D"
-                android:gravity="center"
-                android:text="Yellow"
-                android:textColor="#171717"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-        </GridLayout>
+        <!-- SELECTED COLOR STATUS -->
 
         <TextView
             android:id="@+id/backgroundSelected"
             android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:text="Selected: Black"
-            android:textColor="#55D8FF"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:layout_height="1dp"
+            android:visibility="gone"
+            android:text="Selected: Black" />
+
+        <!-- CONTINUE -->
 
         <TextView
             android:id="@+id/backgroundDone"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="14dp"
             android:background="@drawable/bg_create_button"
             android:gravity="center"
             android:text="Continue"

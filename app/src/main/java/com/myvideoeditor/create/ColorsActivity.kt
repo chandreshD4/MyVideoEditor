@@ -1,0 +1,134 @@
+package com.myvideoeditor.create
+
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Color
+import android.os.Bundle
+import android.view.Gravity
+import android.view.View
+import android.widget.GridLayout
+import android.widget.TextView
+import com.myvideoeditor.R
+
+class ColorsActivity : Activity() {
+
+    companion object {
+        const val EXTRA_COLOR = "selected_color"
+        const val EXTRA_COLOR_NAME = "selected_color_name"
+    }
+
+    private val colors = listOf(
+        "Black" to Color.BLACK,
+        "White" to Color.WHITE,
+        "Red" to Color.rgb(244, 67, 54),
+        "Blue" to Color.rgb(33, 150, 243),
+        "Green" to Color.rgb(46, 204, 113),
+        "Yellow" to Color.rgb(255, 193, 7),
+        "Purple" to Color.rgb(156, 39, 176),
+        "Pink" to Color.rgb(233, 30, 99),
+        "Orange" to Color.rgb(255, 152, 0),
+        "Cyan" to Color.rgb(0, 188, 212),
+        "Deep Blue" to Color.rgb(63, 81, 181),
+        "Brown" to Color.rgb(121, 85, 72)
+    )
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContentView(R.layout.activity_colors)
+
+        val grid =
+            findViewById<GridLayout>(R.id.colorsGrid)
+
+        for ((name, color) in colors) {
+
+            val box = TextView(this).apply {
+
+                text = name
+
+                gravity = Gravity.CENTER
+
+                textSize = 15f
+
+                setTextColor(
+                    if (
+                        color == Color.WHITE ||
+                        color == Color.YELLOW
+                    ) {
+                        Color.BLACK
+                    } else {
+                        Color.WHITE
+                    }
+                )
+
+                setBackgroundColor(color)
+
+                setOnClickListener {
+                    selectColor(name, color)
+                }
+            }
+
+            val params =
+                GridLayout.LayoutParams().apply {
+
+                    width = 0
+                    height = dp(90)
+
+                    columnSpec =
+                        GridLayout.spec(
+                            GridLayout.UNDEFINED,
+                            1f
+                        )
+
+                    setMargins(
+                        dp(5),
+                        dp(5),
+                        dp(5),
+                        dp(5)
+                    )
+                }
+
+            grid.addView(box, params)
+        }
+
+        findViewById<View>(R.id.colorsBack)
+            .setOnClickListener {
+                finish()
+            }
+    }
+
+    private fun selectColor(
+        name: String,
+        color: Int
+    ) {
+
+        val result =
+            Intent().apply {
+
+                putExtra(
+                    EXTRA_COLOR,
+                    color
+                )
+
+                putExtra(
+                    EXTRA_COLOR_NAME,
+                    name
+                )
+            }
+
+        setResult(
+            RESULT_OK,
+            result
+        )
+
+        finish()
+    }
+
+    private fun dp(value: Int): Int {
+
+        return (
+            value *
+                resources.displayMetrics.density
+        ).toInt()
+    }
+}
