@@ -579,7 +579,7 @@ class FormatActivity : Activity() {
                     InputType.TYPE_CLASS_NUMBER
 
                 textSize = 16f
-                singleLine = true
+                isSingleLine = true
                 minHeight = dp(52)
 
                 setPadding(
@@ -598,7 +598,7 @@ class FormatActivity : Activity() {
                     InputType.TYPE_CLASS_NUMBER
 
                 textSize = 16f
-                singleLine = true
+                isSingleLine = true
                 minHeight = dp(52)
 
                 setPadding(
