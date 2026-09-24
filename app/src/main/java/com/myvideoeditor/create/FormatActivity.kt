@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.text.InputType
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -196,8 +197,7 @@ class FormatActivity : Activity() {
         transitionSlider.progress = 15
 
         photoSlider.setOnSeekBarChangeListener(
-            object :
-                SeekBar.OnSeekBarChangeListener {
+            object : SeekBar.OnSeekBarChangeListener {
 
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
@@ -205,8 +205,7 @@ class FormatActivity : Activity() {
                     fromUser: Boolean
                 ) {
                     photoDuration =
-                        1.0f +
-                            (progress / 10.0f)
+                        1.0f + (progress / 10.0f)
 
                     photoDurationValue.text =
                         String.format(
@@ -228,8 +227,7 @@ class FormatActivity : Activity() {
         )
 
         transitionSlider.setOnSeekBarChangeListener(
-            object :
-                SeekBar.OnSeekBarChangeListener {
+            object : SeekBar.OnSeekBarChangeListener {
 
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
@@ -237,8 +235,7 @@ class FormatActivity : Activity() {
                     fromUser: Boolean
                 ) {
                     transitionDuration =
-                        0.5f +
-                            (progress / 10.0f)
+                        0.5f + (progress / 10.0f)
 
                     transitionDurationValue.text =
                         String.format(
@@ -265,16 +262,15 @@ class FormatActivity : Activity() {
 
     private fun toggleAdvanced() {
 
-        if (
-            advancedContent.visibility ==
-            View.VISIBLE
-        ) {
+        if (advancedContent.visibility == View.VISIBLE) {
+
             advancedContent.visibility =
                 View.GONE
 
             advancedArrow.text = "⌄"
 
         } else {
+
             advancedContent.visibility =
                 View.VISIBLE
 
@@ -285,6 +281,7 @@ class FormatActivity : Activity() {
     private fun chooseRatio(
         ratio: String
     ) {
+
         selectedRatio = ratio
         customRatio = false
 
@@ -296,17 +293,16 @@ class FormatActivity : Activity() {
 
     private fun updateRatioSelection() {
 
-        val all =
-            listOf(
-                ratio16x9,
-                ratio9x16,
-                ratio1x1,
-                ratio4x3,
-                ratio3x4,
-                ratio4x5,
-                ratioCinema,
-                customRatioView
-            )
+        val all = listOf(
+            ratio16x9,
+            ratio9x16,
+            ratio1x1,
+            ratio4x3,
+            ratio3x4,
+            ratio4x5,
+            ratioCinema,
+            customRatioView
+        )
 
         for (item in all) {
 
@@ -325,13 +321,15 @@ class FormatActivity : Activity() {
             item.alpha = 0.85f
         }
 
-        val selected: TextView?
+        val selected: TextView =
+            if (customRatio) {
 
-        if (customRatio) {
-            selected = customRatioView
-        } else {
-            selected =
+                customRatioView
+
+            } else {
+
                 when (selectedRatio) {
+
                     "16:9" -> ratio16x9
                     "9:16" -> ratio9x16
                     "1:1" -> ratio1x1
@@ -339,9 +337,10 @@ class FormatActivity : Activity() {
                     "3:4" -> ratio3x4
                     "4:5" -> ratio4x5
                     "2.35:1" -> ratioCinema
+
                     else -> ratio16x9
                 }
-        }
+            }
 
         selected.setBackgroundResource(
             R.drawable.bg_ratio_selected
@@ -360,12 +359,11 @@ class FormatActivity : Activity() {
 
     private fun updatePhotoModeSelection() {
 
-        val all =
-            listOf(
-                photoFit,
-                photoFill,
-                photoAuto
-            )
+        val all = listOf(
+            photoFit,
+            photoFill,
+            photoAuto
+        )
 
         for (item in all) {
 
@@ -384,8 +382,10 @@ class FormatActivity : Activity() {
 
         val selected =
             when (photoMode) {
+
                 "Fill" -> photoFill
                 "Auto" -> photoAuto
+
                 else -> photoFit
             }
 
@@ -488,6 +488,7 @@ class FormatActivity : Activity() {
         resultCode: Int,
         data: Intent?
     ) {
+
         super.onActivityResult(
             requestCode,
             resultCode,
@@ -505,17 +506,17 @@ class FormatActivity : Activity() {
             data?.data ?: return
 
         try {
-            contentResolver
-                .takePersistableUriPermission(
-                    uri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION
-                )
+
+            contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+
         } catch (_: SecurityException) {
         }
 
         val mime =
-            contentResolver.getType(uri)
-                ?: ""
+            contentResolver.getType(uri) ?: ""
 
         val sourceType =
             if (mime.startsWith("video/")) {
@@ -563,83 +564,162 @@ class FormatActivity : Activity() {
                     LinearLayout.VERTICAL
 
                 setPadding(
-                    45,
-                    10,
-                    45,
-                    5
+                    dp(24),
+                    dp(8),
+                    dp(24),
+                    dp(4)
                 )
             }
 
         val widthInput =
             EditText(this).apply {
-                hint = "Width"
-                inputType = 2
+
+                hint = "Width (px)"
+                inputType =
+                    InputType.TYPE_CLASS_NUMBER
+
+                textSize = 16f
+                singleLine = true
+                minHeight = dp(52)
+
+                setPadding(
+                    dp(12),
+                    0,
+                    dp(12),
+                    0
+                )
             }
 
         val heightInput =
             EditText(this).apply {
-                hint = "Height"
-                inputType = 2
+
+                hint = "Height (px)"
+                inputType =
+                    InputType.TYPE_CLASS_NUMBER
+
+                textSize = 16f
+                singleLine = true
+                minHeight = dp(52)
+
+                setPadding(
+                    dp(12),
+                    0,
+                    dp(12),
+                    0
+                )
             }
 
         layout.addView(
             widthInput,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                55
-            )
+                dp(58)
+            ).apply {
+
+                bottomMargin =
+                    dp(10)
+            }
         )
 
         layout.addView(
             heightInput,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                55
+                dp(58)
             )
         )
 
-        AlertDialog.Builder(this)
-            .setTitle("Custom Canvas Size")
-            .setMessage(
-                "Enter width and height in pixels"
-            )
-            .setView(layout)
-            .setNegativeButton(
-                "Cancel",
-                null
-            )
-            .setPositiveButton(
-                "Use Size"
-            ) { _, _ ->
+        val dialog =
+            AlertDialog.Builder(this)
+                .setTitle(
+                    "Custom Canvas Size"
+                )
+                .setMessage(
+                    "Enter width and height in pixels"
+                )
+                .setView(layout)
+                .setNegativeButton(
+                    "Cancel",
+                    null
+                )
+                .setPositiveButton(
+                    "Use Size",
+                    null
+                )
+                .create()
+
+        dialog.setOnShowListener {
+
+            dialog.getButton(
+                AlertDialog.BUTTON_POSITIVE
+            ).setOnClickListener {
 
                 val width =
-                    widthInput.text
+                    widthInput
+                        .text
                         .toString()
+                        .trim()
                         .toIntOrNull()
 
                 val height =
-                    heightInput.text
+                    heightInput
+                        .text
                         .toString()
+                        .trim()
                         .toIntOrNull()
 
                 if (
-                    width != null &&
-                    height != null &&
-                    width > 0 &&
-                    height > 0
+                    width == null ||
+                    height == null ||
+                    width <= 0 ||
+                    height <= 0
                 ) {
 
-                    selectedRatio =
-                        "${width}×${height}"
+                    if (
+                        width == null ||
+                        width <= 0
+                    ) {
+                        widthInput.error =
+                            "Enter valid width"
+                    }
 
-                    customRatio = true
+                    if (
+                        height == null ||
+                        height <= 0
+                    ) {
+                        heightInput.error =
+                            "Enter valid height"
+                    }
 
-                    customRatioView.text =
-                        "✓\n${width}×${height}"
-
-                    updateRatioSelection()
+                    return@setOnClickListener
                 }
+
+                selectedRatio =
+                    "${width}×${height}"
+
+                customRatio = true
+
+                customRatioView.text =
+                    "✓\n${width}×${height}"
+
+                updateRatioSelection()
+
+                dialog.dismiss()
             }
-            .show()
+        }
+
+        dialog.show()
+    }
+
+    private fun dp(
+        value: Int
+    ): Int {
+
+        return (
+            value *
+                resources
+                    .displayMetrics
+                    .density
+            ).toInt()
     }
 }

@@ -8,29 +8,28 @@
     android:background="#080A0F">
 
     <!-- TOP BAR -->
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="64dp"
         android:gravity="center_vertical"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp">
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp">
 
         <TextView
             android:id="@+id/formatClose"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:gravity="center"
             android:text="×"
             android:textColor="#FFFFFF"
-            android:textSize="38sp" />
+            android:textSize="34sp" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:paddingStart="10dp"
+            android:paddingStart="6dp"
             android:text="New Project"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
@@ -38,17 +37,16 @@
 
         <TextView
             android:id="@+id/importButton"
-            android:layout_width="125dp"
-            android:layout_height="48dp"
+            android:layout_width="112dp"
+            android:layout_height="44dp"
             android:gravity="center"
             android:background="@drawable/bg_import_button"
             android:text="⇩  Import"
             android:textColor="#FFFFFF"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
     </LinearLayout>
-
 
     <ScrollView
         android:layout_width="match_parent"
@@ -61,11 +59,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="25dp">
-
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="20dp">
 
             <!-- PROJECT NAME -->
 
@@ -74,23 +71,22 @@
                 android:layout_height="wrap_content"
                 android:text="Project name"
                 android:textColor="#E5E7ED"
-                android:textSize="18sp"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="8dp" />
 
             <EditText
                 android:id="@+id/projectName"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="52dp"
                 android:background="@drawable/bg_project_name"
                 android:hint="Enter project name"
                 android:textColor="#FFFFFF"
                 android:textColorHint="#777C87"
-                android:textSize="16sp"
-                android:paddingStart="18dp"
-                android:paddingEnd="18dp"
+                android:textSize="15sp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:singleLine="true" />
-
 
             <!-- ASPECT RATIO -->
 
@@ -99,150 +95,131 @@
                 android:layout_height="wrap_content"
                 android:text="Aspect ratio"
                 android:textColor="#E5E7ED"
-                android:textSize="18sp"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="10dp" />
 
-
-            <!-- ROW 1 -->
+            <!-- RATIO ROW 1 -->
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="145dp"
+                android:layout_height="112dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <!-- 16:9 -->
-
                 <TextView
                     android:id="@+id/ratio16x9"
-                    android:layout_width="112dp"
-                    android:layout_height="78dp"
+                    android:layout_width="78dp"
+                    android:layout_height="70dp"
                     android:gravity="center"
                     android:background="@drawable/bg_ratio_selected"
                     android:text="▶&#10;16:9&#10;YouTube"
                     android:textColor="#FF5963"
-                    android:textSize="13sp"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
-
-                <!-- 9:16 -->
 
                 <TextView
                     android:id="@+id/ratio9x16"
-                    android:layout_width="66dp"
-                    android:layout_height="112dp"
-                    android:layout_marginStart="18dp"
+                    android:layout_width="54dp"
+                    android:layout_height="92dp"
+                    android:layout_marginStart="10dp"
                     android:gravity="center"
                     android:background="@drawable/bg_ratio_unselected"
                     android:text="▶&#10;9:16&#10;Shorts"
                     android:textColor="#B8BDC8"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
-
-                <!-- 1:1 -->
 
                 <TextView
                     android:id="@+id/ratio1x1"
-                    android:layout_width="82dp"
-                    android:layout_height="82dp"
-                    android:layout_marginStart="18dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="10dp"
                     android:gravity="center"
                     android:background="@drawable/bg_ratio_unselected"
                     android:text="◎&#10;1:1&#10;Square"
                     android:textColor="#B8BDC8"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
-
-                <!-- 4:3 -->
 
                 <TextView
                     android:id="@+id/ratio4x3"
-                    android:layout_width="100dp"
-                    android:layout_height="75dp"
-                    android:layout_marginStart="18dp"
+                    android:layout_width="76dp"
+                    android:layout_height="58dp"
+                    android:layout_marginStart="10dp"
                     android:gravity="center"
                     android:background="@drawable/bg_ratio_unselected"
                     android:text="▷&#10;4:3&#10;Classic"
                     android:textColor="#B8BDC8"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
 
             </LinearLayout>
 
-
-            <!-- ROW 2 -->
+            <!-- RATIO ROW 2 -->
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="145dp"
+                android:layout_height="112dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <!-- 3:4 -->
-
                 <TextView
                     android:id="@+id/ratio3x4"
-                    android:layout_width="72dp"
-                    android:layout_height="96dp"
+                    android:layout_width="54dp"
+                    android:layout_height="78dp"
                     android:gravity="center"
                     android:background="@drawable/bg_ratio_unselected"
                     android:text="▷&#10;3:4&#10;Portrait"
                     android:textColor="#B8BDC8"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
-
-                <!-- 4:5 -->
 
                 <TextView
                     android:id="@+id/ratio4x5"
-                    android:layout_width="76dp"
-                    android:layout_height="95dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_width="58dp"
+                    android:layout_height="78dp"
+                    android:layout_marginStart="14dp"
                     android:gravity="center"
                     android:background="@drawable/bg_ratio_unselected"
                     android:text="◎&#10;4:5&#10;Instagram"
                     android:textColor="#B8BDC8"
-                    android:textSize="11sp"
+                    android:textSize="9sp"
                     android:textStyle="bold" />
-
-                <!-- CINEMA -->
 
                 <TextView
                     android:id="@+id/ratioCinema"
-                    android:layout_width="118dp"
-                    android:layout_height="58dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_width="90dp"
+                    android:layout_height="46dp"
+                    android:layout_marginStart="14dp"
                     android:gravity="center"
                     android:background="@drawable/bg_ratio_unselected"
-                    android:text="▬  2.35:1&#10;Cinema"
+                    android:text="▬ 2.35:1&#10;Cinema"
                     android:textColor="#B8BDC8"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
-
-                <!-- CUSTOM -->
 
                 <TextView
                     android:id="@+id/customRatio"
-                    android:layout_width="82dp"
-                    android:layout_height="82dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="14dp"
                     android:gravity="center"
                     android:background="@drawable/bg_ratio_unselected"
                     android:text="+&#10;CUSTOM"
                     android:textColor="#B8BDC8"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
 
             </LinearLayout>
-
 
             <!-- ADVANCED HEADER -->
 
             <LinearLayout
                 android:id="@+id/advancedHeader"
                 android:layout_width="match_parent"
-                android:layout_height="58dp"
+                android:layout_height="52dp"
                 android:gravity="center_vertical"
                 android:clickable="true"
                 android:focusable="true">
@@ -254,20 +231,19 @@
                     android:gravity="center_vertical"
                     android:text="Advanced"
                     android:textColor="#E5E7ED"
-                    android:textSize="18sp"
+                    android:textSize="17sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/advancedArrow"
-                    android:layout_width="45dp"
+                    android:layout_width="42dp"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="⌄"
                     android:textColor="#B8BDC8"
-                    android:textSize="25sp" />
+                    android:textSize="24sp" />
 
             </LinearLayout>
-
 
             <!-- ADVANCED CONTENT -->
 
@@ -278,142 +254,123 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
-
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Photo display mode"
                     android:textColor="#E5E7ED"
-                    android:textSize="17sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="12dp" />
-
-
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="8dp" />
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="92dp"
+                    android:layout_height="82dp"
                     android:orientation="horizontal"
                     android:gravity="center">
 
                     <TextView
                         android:id="@+id/photoFit"
-                        android:layout_width="100dp"
-                        android:layout_height="82dp"
+                        android:layout_width="90dp"
+                        android:layout_height="72dp"
                         android:gravity="center"
                         android:text="▧&#10;Fit"
                         android:textColor="#42C9F2"
-                        android:textSize="15sp"
+                        android:textSize="14sp"
                         android:textStyle="bold"
                         android:background="@drawable/bg_mode_selected" />
 
                     <TextView
                         android:id="@+id/photoFill"
-                        android:layout_width="100dp"
-                        android:layout_height="82dp"
-                        android:layout_marginStart="15dp"
+                        android:layout_width="90dp"
+                        android:layout_height="72dp"
+                        android:layout_marginStart="12dp"
                         android:gravity="center"
                         android:text="▧&#10;Fill"
                         android:textColor="#B8BDC8"
-                        android:textSize="15sp"
+                        android:textSize="14sp"
                         android:textStyle="bold"
                         android:background="@drawable/bg_mode_unselected" />
 
                     <TextView
                         android:id="@+id/photoAuto"
-                        android:layout_width="100dp"
-                        android:layout_height="82dp"
-                        android:layout_marginStart="15dp"
+                        android:layout_width="90dp"
+                        android:layout_height="72dp"
+                        android:layout_marginStart="12dp"
                         android:gravity="center"
                         android:text="●&#10;Auto"
                         android:textColor="#B8BDC8"
-                        android:textSize="15sp"
+                        android:textSize="14sp"
                         android:textStyle="bold"
                         android:background="@drawable/bg_mode_unselected" />
 
                 </LinearLayout>
 
-
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="18dp">
+                    android:layout_height="32dp"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="10dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        android:gravity="center_vertical">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Default photo duration"
+                        android:textColor="#E5E7ED"
+                        android:textSize="15sp"
+                        android:gravity="center_vertical" />
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:text="Default photo duration"
-                            android:textColor="#E5E7ED"
-                            android:textSize="16sp"
-                            android:gravity="center_vertical" />
-
-                        <TextView
-                            android:id="@+id/photoDurationValue"
-                            android:layout_width="50dp"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="4.5"
-                            android:textColor="#48C8F2"
-                            android:textSize="15sp" />
-
-                    </LinearLayout>
-
-                    <SeekBar
-                        android:id="@+id/photoDurationSlider"
-                        android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:max="100"
-                        android:progress="35" />
+                    <TextView
+                        android:id="@+id/photoDurationValue"
+                        android:layout_width="48dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="4.5"
+                        android:textColor="#48C8F2"
+                        android:textSize="14sp" />
 
                 </LinearLayout>
 
+                <SeekBar
+                    android:id="@+id/photoDurationSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:max="100"
+                    android:progress="35" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="12dp">
+                    android:layout_height="32dp"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="4dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        android:gravity="center_vertical">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Default transition duration"
+                        android:textColor="#E5E7ED"
+                        android:textSize="15sp"
+                        android:gravity="center_vertical" />
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:text="Default transition duration"
-                            android:textColor="#E5E7ED"
-                            android:textSize="16sp"
-                            android:gravity="center_vertical" />
-
-                        <TextView
-                            android:id="@+id/transitionDurationValue"
-                            android:layout_width="50dp"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="1.5"
-                            android:textColor="#48C8F2"
-                            android:textSize="15sp" />
-
-                    </LinearLayout>
-
-                    <SeekBar
-                        android:id="@+id/transitionDurationSlider"
-                        android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:max="100"
-                        android:progress="15" />
+                    <TextView
+                        android:id="@+id/transitionDurationValue"
+                        android:layout_width="48dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="1.5"
+                        android:textColor="#48C8F2"
+                        android:textSize="14sp" />
 
                 </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/transitionDurationSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:max="100"
+                    android:progress="15" />
 
             </LinearLayout>
 
@@ -421,16 +378,15 @@
 
     </ScrollView>
 
-
-    <!-- CREATE -->
+    <!-- CREATE BUTTON -->
 
     <TextView
         android:id="@+id/createButton"
         android:layout_width="match_parent"
-        android:layout_height="62dp"
-        android:layout_marginStart="26dp"
-        android:layout_marginEnd="26dp"
-        android:layout_marginBottom="18dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginEnd="22dp"
+        android:layout_marginBottom="14dp"
         android:gravity="center"
         android:background="@drawable/bg_create_button"
         android:text="Create"
