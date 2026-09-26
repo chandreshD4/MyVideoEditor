@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Media access -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- Image and video access -->
+    <uses-permission
+        android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <uses-permission
+        android:name="android.permission.READ_MEDIA_VIDEO" />
+
+    <!-- Audio access -->
+    <uses-permission
+        android:name="android.permission.READ_MEDIA_AUDIO" />
+
+    <!-- Android 12 and below -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:theme="@style/AppTheme"
         android:label="My Video Editor"
         android:allowBackup="true"
         android:supportsRtl="true">
+
+        <!-- Home screen -->
 
         <activity
             android:name=".MainActivity"
@@ -30,20 +42,35 @@
 
         </activity>
 
+        <!-- Format / Aspect Ratio screen -->
+
         <activity
             android:name=".create.FormatActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
+
+        <!-- Media source screen -->
 
         <activity
             android:name=".create.MediaSourceActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
 
+        <!-- Colors screen -->
+
         <activity
             android:name=".create.ColorsActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
+
+        <!-- Folder media screen -->
+
+        <activity
+            android:name=".create.FolderMediaActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+
+        <!-- Editor screen -->
 
         <activity
             android:name=".editor.EditorActivity"

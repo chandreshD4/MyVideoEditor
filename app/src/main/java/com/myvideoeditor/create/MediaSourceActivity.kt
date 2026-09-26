@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Size
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -24,31 +23,52 @@ class MediaSourceActivity : Activity() {
 
     companion object {
 
-        const val EXTRA_ASPECT_RATIO = "aspect_ratio"
-        const val EXTRA_SOURCE_TYPE = "source_type"
-        const val EXTRA_BACKGROUND_COLOR = "background_color"
-        const val EXTRA_MEDIA_URI = "media_uri"
-        const val EXTRA_PROJECT_NAME = "project_name"
+        const val EXTRA_ASPECT_RATIO =
+            "aspect_ratio"
+
+        const val EXTRA_SOURCE_TYPE =
+            "source_type"
+
+        const val EXTRA_BACKGROUND_COLOR =
+            "background_color"
+
+        const val EXTRA_MEDIA_URI =
+            "media_uri"
+
+        const val EXTRA_PROJECT_NAME =
+            "project_name"
 
         const val REQUEST_MEDIA = 301
         const val REQUEST_COLOR = 302
         const val REQUEST_AUDIO = 303
         const val REQUEST_FOLDER = 304
         const val REQUEST_PERMISSION = 305
+        const val REQUEST_FOLDER_MEDIA = 306
     }
 
     private var aspectRatio = "9:16"
+
     private var sourceType = "blank"
+
     private var mediaUri: String? = null
-    private var projectName = "New Project"
 
-    private var selectedColor = Color.BLACK
-    private var selectedColorName = "Black"
+    private var projectName =
+        "New Project"
 
-    private lateinit var importedMedia: TextView
-    private lateinit var colorsBox: TextView
-    private lateinit var mediaEmptyText: TextView
-    private lateinit var mediaRecycler: RecyclerView
+    private var selectedColor =
+        Color.BLACK
+
+    private var selectedColorName =
+        "Black"
+
+    private lateinit var colorsBox:
+        TextView
+
+    private lateinit var mediaEmptyText:
+        TextView
+
+    private lateinit var mediaRecycler:
+        RecyclerView
 
     private val folders =
         ArrayList<MediaFolder>()
@@ -75,11 +95,6 @@ class MediaSourceActivity : Activity() {
                 FormatActivity.EXTRA_PROJECT_NAME
             ) ?: "New Project"
 
-        importedMedia =
-            findViewById(
-                R.id.importedMedia
-            )
-
         colorsBox =
             findViewById(
                 R.id.colorsBox
@@ -101,8 +116,6 @@ class MediaSourceActivity : Activity() {
 
         updateSelectedColor()
 
-        updateImportedMedia()
-
         requestMediaPermission()
     }
 
@@ -120,12 +133,7 @@ class MediaSourceActivity : Activity() {
         mediaRecycler.adapter =
             MediaFolderAdapter(
                 folders
-            ) { folder ->
-
-                openFolderMedia(
-                    folder
-                )
-            }
+            )
     }
 
     private fun setupClicks() {
@@ -144,10 +152,7 @@ class MediaSourceActivity : Activity() {
             finish()
         }
 
-        /*
-         * BOX 1
-         * MEDIA
-         */
+        // MEDIA
 
         findViewById<TextView>(
             R.id.importButton
@@ -156,20 +161,14 @@ class MediaSourceActivity : Activity() {
             openMediaPicker()
         }
 
-        /*
-         * BOX 2
-         * COLORS
-         */
+        // COLORS
 
         colorsBox.setOnClickListener {
 
             openColorsScreen()
         }
 
-        /*
-         * BOX 3
-         * DEVICE FILES
-         */
+        // DEVICE FILES
 
         findViewById<TextView>(
             R.id.mediaDevice
@@ -178,10 +177,7 @@ class MediaSourceActivity : Activity() {
             openAllFiles()
         }
 
-        /*
-         * BOX 4
-         * PHOTOS
-         */
+        // PHOTOS
 
         findViewById<TextView>(
             R.id.mediaPhotos
@@ -190,10 +186,7 @@ class MediaSourceActivity : Activity() {
             openImagePicker()
         }
 
-        /*
-         * BOX 5
-         * AUDIO
-         */
+        // AUDIO
 
         findViewById<TextView>(
             R.id.boxFive
@@ -202,10 +195,7 @@ class MediaSourceActivity : Activity() {
             openAudioPicker()
         }
 
-        /*
-         * BOX 6
-         * MORE / FOLDER
-         */
+        // MORE / FOLDER
 
         findViewById<TextView>(
             R.id.boxSix
@@ -214,9 +204,7 @@ class MediaSourceActivity : Activity() {
             openFolderPicker()
         }
 
-        /*
-         * CONTINUE
-         */
+        // CONTINUE
 
         findViewById<TextView>(
             R.id.backgroundDone
@@ -228,21 +216,25 @@ class MediaSourceActivity : Activity() {
 
     private fun requestMediaPermission() {
 
-        if (Build.VERSION.SDK_INT >= 33) {
+        if (
+            Build.VERSION.SDK_INT >= 33
+        ) {
 
-            val imagePermission =
+            val imagesGranted =
                 checkSelfPermission(
                     Manifest.permission.READ_MEDIA_IMAGES
-                ) == PackageManager.PERMISSION_GRANTED
+                ) ==
+                    PackageManager.PERMISSION_GRANTED
 
-            val videoPermission =
+            val videosGranted =
                 checkSelfPermission(
                     Manifest.permission.READ_MEDIA_VIDEO
-                ) == PackageManager.PERMISSION_GRANTED
+                ) ==
+                    PackageManager.PERMISSION_GRANTED
 
             if (
-                !imagePermission ||
-                !videoPermission
+                !imagesGranted ||
+                !videosGranted
             ) {
 
                 requestPermissions(
@@ -260,12 +252,15 @@ class MediaSourceActivity : Activity() {
 
         } else {
 
-            val storagePermission =
+            val storageGranted =
                 checkSelfPermission(
                     Manifest.permission.READ_EXTERNAL_STORAGE
-                ) == PackageManager.PERMISSION_GRANTED
+                ) ==
+                    PackageManager.PERMISSION_GRANTED
 
-            if (!storagePermission) {
+            if (
+                !storageGranted
+            ) {
 
                 requestPermissions(
                     arrayOf(
@@ -304,8 +299,11 @@ class MediaSourceActivity : Activity() {
 
     private fun loadMediaFolders() {
 
+        mediaEmptyText.visibility =
+            TextView.VISIBLE
+
         mediaEmptyText.text =
-            "Scanning your photos and videos..."
+            "Scanning your media..."
 
         Thread {
 
@@ -320,9 +318,12 @@ class MediaSourceActivity : Activity() {
                     result
                 )
 
-                mediaRecycler.adapter?.notifyDataSetChanged()
+                mediaRecycler.adapter
+                    ?.notifyDataSetChanged()
 
-                if (folders.isEmpty()) {
+                if (
+                    folders.isEmpty()
+                ) {
 
                     mediaEmptyText.visibility =
                         TextView.VISIBLE
@@ -346,33 +347,44 @@ class MediaSourceActivity : Activity() {
         val result =
             ArrayList<MediaFolder>()
 
-        val seen =
+        val folderKeys =
             HashSet<String>()
 
         val projection =
             arrayOf(
                 MediaStore.MediaColumns._ID,
                 MediaStore.Files.FileColumns.MEDIA_TYPE,
+                MediaStore.MediaColumns.DISPLAY_NAME,
                 MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
-                MediaStore.MediaColumns.RELATIVE_PATH,
-                MediaStore.MediaColumns.DATE_ADDED
+                MediaStore.MediaColumns.DATE_ADDED,
+                MediaStore.MediaColumns.RELATIVE_PATH
             )
 
-        val mediaStoreUri =
+        val filesUri =
             MediaStore.Files.getContentUri(
                 "external"
+            )
+
+        val selection =
+            "${MediaStore.Files.FileColumns.MEDIA_TYPE}=? OR " +
+                "${MediaStore.Files.FileColumns.MEDIA_TYPE}=?"
+
+        val selectionArgs =
+            arrayOf(
+                MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
+                    .toString(),
+
+                MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
+                    .toString()
             )
 
         try {
 
             contentResolver.query(
-                mediaStoreUri,
+                filesUri,
                 projection,
-                "${MediaStore.Files.FileColumns.MEDIA_TYPE}=? OR ${MediaStore.Files.FileColumns.MEDIA_TYPE}=?",
-                arrayOf(
-                    MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(),
-                    MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString()
-                ),
+                selection,
+                selectionArgs,
                 "${MediaStore.MediaColumns.DATE_ADDED} DESC"
             )?.use { cursor ->
 
@@ -386,9 +398,19 @@ class MediaSourceActivity : Activity() {
                         MediaStore.Files.FileColumns.MEDIA_TYPE
                     )
 
+                val nameIndex =
+                    cursor.getColumnIndex(
+                        MediaStore.MediaColumns.DISPLAY_NAME
+                    )
+
                 val bucketIndex =
                     cursor.getColumnIndex(
                         MediaStore.MediaColumns.BUCKET_DISPLAY_NAME
+                    )
+
+                val dateIndex =
+                    cursor.getColumnIndex(
+                        MediaStore.MediaColumns.DATE_ADDED
                     )
 
                 val pathIndex =
@@ -417,26 +439,61 @@ class MediaSourceActivity : Activity() {
                             typeIndex
                         )
 
+                    val displayName =
+                        if (
+                            nameIndex >= 0
+                        ) {
+
+                            cursor.getString(
+                                nameIndex
+                            ) ?: ""
+
+                        } else {
+
+                            ""
+                        }
+
                     val bucket =
                         if (
                             bucketIndex >= 0
                         ) {
+
                             cursor.getString(
                                 bucketIndex
                             )
+
                         } else {
+
                             null
                         }
 
                     val relativePath =
                         if (
+                            Build.VERSION.SDK_INT >= 29 &&
                             pathIndex >= 0
                         ) {
+
                             cursor.getString(
                                 pathIndex
                             )
+
                         } else {
+
                             null
+                        }
+
+                    val dateAdded =
+                        if (
+                            dateIndex >= 0
+                        ) {
+
+                            cursor.getLong(
+                                dateIndex
+                            )
+
+                        } else {
+
+                            0L
                         }
 
                     val folderName =
@@ -445,14 +502,18 @@ class MediaSourceActivity : Activity() {
                             relativePath
                         )
 
-                    val key =
-                        folderName.lowercase()
+                    val folderKey =
+                        getFolderKey(
+                            bucket,
+                            relativePath
+                        )
 
                     if (
-                        seen.contains(
-                            key
+                        folderKeys.contains(
+                            folderKey
                         )
                     ) {
+
                         continue
                     }
 
@@ -477,14 +538,18 @@ class MediaSourceActivity : Activity() {
 
                     result.add(
                         MediaFolder(
-                            folderName,
-                            itemUri,
-                            mediaType
+                            name = folderName,
+                            uri = itemUri,
+                            mediaType = mediaType,
+                            relativePath = relativePath,
+                            bucketName = bucket,
+                            latestFileName = displayName,
+                            latestDate = dateAdded
                         )
                     )
 
-                    seen.add(
-                        key
+                    folderKeys.add(
+                        folderKey
                     )
                 }
             }
@@ -513,13 +578,13 @@ class MediaSourceActivity : Activity() {
             !relativePath.isNullOrBlank()
         ) {
 
-            val cleanPath =
+            val clean =
                 relativePath.trimEnd(
                     '/'
                 )
 
             val index =
-                cleanPath.lastIndexOf(
+                clean.lastIndexOf(
                     '/'
                 )
 
@@ -527,38 +592,73 @@ class MediaSourceActivity : Activity() {
                 index >= 0
             ) {
 
-                return cleanPath.substring(
+                return clean.substring(
                     index + 1
                 )
             }
 
-            return cleanPath
+            return clean
         }
 
         return "Other Media"
     }
 
-    private fun openFolderMedia(
+    private fun getFolderKey(
+        bucket: String?,
+        relativePath: String?
+    ): String {
+
+        if (
+            !relativePath.isNullOrBlank()
+        ) {
+
+            return relativePath
+                .trim()
+                .lowercase()
+        }
+
+        if (
+            !bucket.isNullOrBlank()
+        ) {
+
+            return bucket
+                .trim()
+                .lowercase()
+        }
+
+        return "other_media"
+    }
+
+    private fun openFolder(
         folder: MediaFolder
     ) {
 
-        mediaUri =
-            folder.uri.toString()
+        val intent =
+            Intent(
+                this,
+                FolderMediaActivity::class.java
+            ).apply {
 
-        sourceType =
-            if (
-                folder.mediaType ==
-                MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
-            ) {
+                putExtra(
+                    FolderMediaActivity.EXTRA_FOLDER_NAME,
+                    folder.name
+                )
 
-                "video"
+                putExtra(
+                    FolderMediaActivity.EXTRA_FOLDER_PATH,
+                    folder.relativePath
+                )
 
-            } else {
-
-                "image"
+                putExtra(
+                    FolderMediaActivity.EXTRA_BUCKET,
+                    folder.bucketName
+                )
             }
 
-        updateImportedMedia()
+        startActivityForResult(
+            intent,
+            REQUEST_FOLDER_MEDIA
+        )
     }
 
     private fun openColorsScreen() {
@@ -579,30 +679,6 @@ class MediaSourceActivity : Activity() {
 
         colorsBox.text =
             "●\nCOLORS\n$selectedColorName"
-    }
-
-    private fun updateImportedMedia() {
-
-        importedMedia.text =
-            if (
-                mediaUri.isNullOrEmpty()
-            ) {
-
-                "No media selected"
-
-            } else {
-
-                if (
-                    sourceType == "video"
-                ) {
-
-                    "✓ Video selected"
-
-                } else {
-
-                    "✓ Media selected"
-                }
-            }
     }
 
     private fun openMediaPicker() {
@@ -763,22 +839,42 @@ class MediaSourceActivity : Activity() {
 
         if (
             requestCode ==
-            REQUEST_FOLDER &&
+            REQUEST_FOLDER_MEDIA &&
             resultCode ==
             RESULT_OK
         ) {
 
             val uri =
-                data?.data ?: return
+                data?.getStringExtra(
+                    FolderMediaActivity.EXTRA_SELECTED_URI
+                )
+
+            if (
+                !uri.isNullOrEmpty()
+            ) {
+
+                mediaUri =
+                    uri
+
+                sourceType =
+                    "media"
+            }
+
+            return
+        }
+
+        if (
+            requestCode ==
+            REQUEST_FOLDER &&
+            resultCode ==
+            RESULT_OK
+        ) {
 
             mediaUri =
-                uri.toString()
+                data?.data?.toString()
 
             sourceType =
                 "folder"
-
-            importedMedia.text =
-                "✓ Folder selected"
 
             return
         }
@@ -825,9 +921,6 @@ class MediaSourceActivity : Activity() {
             sourceType =
                 "audio"
 
-            importedMedia.text =
-                "✓ Audio selected"
-
             return
         }
 
@@ -849,8 +942,6 @@ class MediaSourceActivity : Activity() {
 
                 "image"
             }
-
-        updateImportedMedia()
     }
 
     private fun continueToEditor() {
@@ -902,21 +993,24 @@ class MediaSourceActivity : Activity() {
     data class MediaFolder(
         val name: String,
         val uri: Uri,
-        val mediaType: Int
+        val mediaType: Int,
+        val relativePath: String?,
+        val bucketName: String?,
+        val latestFileName: String,
+        val latestDate: Long
     )
 
     private inner class MediaFolderAdapter(
-        private val items: List<MediaFolder>,
-        private val onClick:
-            (MediaFolder) -> Unit
+        private val items:
+            List<MediaFolder>
     ) : RecyclerView.Adapter<
         MediaFolderAdapter.Holder
     >() {
 
         inner class Holder(
-            val layout: LinearLayout
+            val card: LinearLayout
         ) : RecyclerView.ViewHolder(
-            layout
+            card
         )
 
         override fun onCreateViewHolder(
@@ -937,17 +1031,13 @@ class MediaSourceActivity : Activity() {
 
                     setPadding(
                         dp(6),
-                        dp(6),
+                        dp(22),
                         dp(6),
                         dp(6)
                     )
 
-                    setBackgroundColor(
-                        Color.rgb(
-                            18,
-                            23,
-                            31
-                        )
+                    setBackgroundResource(
+                        R.drawable.bg_folder_card
                     )
                 }
 
@@ -956,11 +1046,16 @@ class MediaSourceActivity : Activity() {
                     parent.context
                 ).apply {
 
-                    id =
-                        android.R.id.icon
-
                     scaleType =
                         ImageView.ScaleType.CENTER_CROP
+
+                    setBackgroundColor(
+                        Color.rgb(
+                            10,
+                            13,
+                            18
+                        )
+                    )
                 }
 
             card.addView(
@@ -976,9 +1071,6 @@ class MediaSourceActivity : Activity() {
                     parent.context
                 ).apply {
 
-                    id =
-                        android.R.id.text1
-
                     gravity =
                         Gravity.CENTER
 
@@ -989,19 +1081,14 @@ class MediaSourceActivity : Activity() {
                     textSize =
                         13f
 
-                    setPadding(
-                        dp(3),
-                        dp(6),
-                        dp(3),
-                        dp(3)
-                    )
+                    maxLines = 2
                 }
 
             card.addView(
                 title,
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(42)
+                    dp(38)
                 )
             )
 
@@ -1035,14 +1122,14 @@ class MediaSourceActivity : Activity() {
                 items[position]
 
             val image =
-                holder.layout.findViewById<ImageView>(
-                    android.R.id.icon
-                )
+                holder.card.getChildAt(
+                    0
+                ) as ImageView
 
             val title =
-                holder.layout.findViewById<TextView>(
-                    android.R.id.text1
-                )
+                holder.card.getChildAt(
+                    1
+                ) as TextView
 
             title.text =
                 item.name
@@ -1062,9 +1149,9 @@ class MediaSourceActivity : Activity() {
                         val bitmap =
                             contentResolver.loadThumbnail(
                                 item.uri,
-                                Size(
-                                    dp(300),
-                                    dp(200)
+                                android.util.Size(
+                                    dp(350),
+                                    dp(250)
                                 ),
                                 null
                             )
@@ -1090,15 +1177,16 @@ class MediaSourceActivity : Activity() {
 
             }.start()
 
-            holder.layout.setOnClickListener {
+            holder.card.setOnClickListener {
 
-                onClick(
+                openFolder(
                     item
                 )
             }
         }
 
-        override fun getItemCount(): Int {
+        override fun getItemCount():
+            Int {
 
             return items.size
         }
