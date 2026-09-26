@@ -74,8 +74,6 @@
             android:alignmentMode="alignMargins"
             android:columnOrderPreserved="false">
 
-            <!-- MEDIA -->
-
             <TextView
                 android:id="@+id/importButton"
                 android:layout_width="0dp"
@@ -89,8 +87,6 @@
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <!-- COLORS -->
-
             <TextView
                 android:id="@+id/colorsBox"
                 android:layout_width="0dp"
@@ -99,12 +95,10 @@
                 android:layout_margin="5dp"
                 android:background="#302719"
                 android:gravity="center"
-                android:text="●&#10;COLORS&#10;Background"
+                android:text="●&#10;COLORS&#10;Black"
                 android:textColor="#FFD75A"
                 android:textSize="14sp"
                 android:textStyle="bold" />
-
-            <!-- DEVICE -->
 
             <TextView
                 android:id="@+id/mediaDevice"
@@ -119,8 +113,6 @@
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <!-- PHOTOS -->
-
             <TextView
                 android:id="@+id/mediaPhotos"
                 android:layout_width="0dp"
@@ -134,8 +126,6 @@
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <!-- AUDIO -->
-
             <TextView
                 android:id="@+id/boxFive"
                 android:layout_width="0dp"
@@ -148,8 +138,6 @@
                 android:textColor="#FF91B0"
                 android:textSize="14sp"
                 android:textStyle="bold" />
-
-            <!-- MORE -->
 
             <TextView
                 android:id="@+id/boxSix"
@@ -171,25 +159,23 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="8dp"
             android:text="Your Media"
             android:textColor="#F1F3F8"
             android:textSize="22sp"
             android:textStyle="bold" />
 
-        <!-- MEDIA SCAN STATUS -->
-
         <TextView
             android:id="@+id/mediaEmptyText"
             android:layout_width="match_parent"
-            android:layout_height="46dp"
+            android:layout_height="36dp"
             android:gravity="center"
             android:text="Scanning your media..."
             android:textColor="#55D8FF"
-            android:textSize="14sp" />
+            android:textSize="13sp" />
 
-        <!-- AUTOMATIC MEDIA FOLDERS -->
+        <!-- MEDIA FOLDER GRID -->
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/mediaFoldersRecyclerView"
@@ -197,7 +183,23 @@
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
             android:overScrollMode="never"
-            android:paddingBottom="8dp" />
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="4dp" />
+
+        <!-- SEE ALL -->
+
+        <TextView
+            android:id="@+id/seeAllButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text="SEE ALL"
+            android:textColor="#1689FF"
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
         <!-- CONTINUE -->
 
@@ -205,7 +207,7 @@
             android:id="@+id/backgroundDone"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="4dp"
             android:background="@drawable/bg_create_button"
             android:gravity="center"
             android:text="Continue"

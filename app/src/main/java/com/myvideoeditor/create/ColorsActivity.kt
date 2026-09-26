@@ -7,6 +7,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.TextView
@@ -15,86 +16,29 @@ import com.myvideoeditor.R
 class ColorsActivity : Activity() {
 
     companion object {
-
-        const val EXTRA_COLOR =
-            "selected_color"
-
-        const val EXTRA_COLOR_NAME =
-            "selected_color_name"
+        const val EXTRA_COLOR = "selected_color"
+        const val EXTRA_COLOR_NAME = "selected_color_name"
     }
 
     private val colors =
         listOf(
-
             "Black" to Color.BLACK,
-
             "White" to Color.WHITE,
-
-            "Red" to Color.rgb(
-                244,
-                67,
-                54
-            ),
-
-            "Blue" to Color.rgb(
-                33,
-                150,
-                243
-            ),
-
-            "Green" to Color.rgb(
-                46,
-                204,
-                113
-            ),
-
-            "Yellow" to Color.rgb(
-                255,
-                193,
-                7
-            ),
-
-            "Purple" to Color.rgb(
-                156,
-                39,
-                176
-            ),
-
-            "Pink" to Color.rgb(
-                233,
-                30,
-                99
-            ),
-
-            "Orange" to Color.rgb(
-                255,
-                152,
-                0
-            ),
-
-            "Cyan" to Color.rgb(
-                0,
-                188,
-                212
-            ),
-
-            "Deep Blue" to Color.rgb(
-                63,
-                81,
-                181
-            ),
-
-            "Brown" to Color.rgb(
-                121,
-                85,
-                72
-            )
+            "Red" to Color.rgb(244, 67, 54),
+            "Blue" to Color.rgb(33, 150, 243),
+            "Green" to Color.rgb(46, 204, 113),
+            "Yellow" to Color.rgb(255, 193, 7),
+            "Purple" to Color.rgb(156, 39, 176),
+            "Pink" to Color.rgb(233, 30, 99),
+            "Orange" to Color.rgb(255, 152, 0),
+            "Cyan" to Color.rgb(0, 188, 212),
+            "Deep Blue" to Color.rgb(63, 81, 181),
+            "Brown" to Color.rgb(121, 85, 72)
         )
 
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
-
         super.onCreate(
             savedInstanceState
         )
@@ -109,14 +53,14 @@ class ColorsActivity : Activity() {
             )
 
         for (
-            item in colors
+            index in colors.indices
         ) {
 
             val name =
-                item.first
+                colors[index].first
 
             val color =
-                item.second
+                colors[index].second
 
             val card =
                 createColorFolder(
@@ -129,9 +73,7 @@ class ColorsActivity : Activity() {
 
                     width = 0
 
-                    height = dp(
-                        118
-                    )
+                    height = dp(100)
 
                     columnSpec =
                         GridLayout.spec(
@@ -140,10 +82,10 @@ class ColorsActivity : Activity() {
                         )
 
                     setMargins(
-                        dp(5),
-                        dp(5),
-                        dp(5),
-                        dp(5)
+                        dp(4),
+                        dp(4),
+                        dp(4),
+                        dp(4)
                     )
                 }
 
@@ -156,7 +98,6 @@ class ColorsActivity : Activity() {
         findViewById<View>(
             R.id.colorsBack
         ).setOnClickListener {
-
             finish()
         }
     }
@@ -169,18 +110,53 @@ class ColorsActivity : Activity() {
         val frame =
             FrameLayout(this)
 
-        frame.setPadding(
-            dp(0),
-            dp(18),
-            dp(0),
-            dp(0)
+        val body =
+            FrameLayout(this).apply {
+
+                background =
+                    createFolderBody(
+                        color
+                    )
+            }
+
+        val bodyParams =
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(82)
+            )
+
+        bodyParams.topMargin =
+            dp(18)
+
+        frame.addView(
+            body,
+            bodyParams
         )
 
-        /*
-         * Main folder body
-         */
+        val tab =
+            View(this).apply {
 
-        val body =
+                background =
+                    createFolderTab(
+                        color
+                    )
+            }
+
+        val tabParams =
+            FrameLayout.LayoutParams(
+                dp(48),
+                dp(24)
+            )
+
+        tabParams.gravity =
+            Gravity.TOP or Gravity.START
+
+        frame.addView(
+            tab,
+            tabParams
+        )
+
+        val title =
             TextView(this).apply {
 
                 gravity =
@@ -190,65 +166,35 @@ class ColorsActivity : Activity() {
                     name
 
                 textSize =
-                    15f
-
-                setTextColor(
-                    getTextColor(
-                        color
-                    )
-                )
+                    13f
 
                 setTypeface(
                     null,
                     android.graphics.Typeface.BOLD
                 )
 
-                background =
-                    roundedBackground(
-                        color,
-                        12
+                setTextColor(
+                    getReadableTextColor(
+                        color
                     )
+                )
+
+                maxLines = 1
             }
 
-        frame.addView(
-            body,
+        val titleParams =
             FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
             )
+
+        titleParams.topMargin =
+            dp(18)
+
+        body.addView(
+            title,
+            titleParams
         )
-
-        /*
-         * Folder top tab
-         */
-
-        val tab =
-            View(this)
-
-        tab.background =
-            roundedTopBackground(
-                color,
-                14
-            )
-
-        val tabParams =
-            FrameLayout.LayoutParams(
-                dp(58),
-                dp(26)
-            )
-
-        tabParams.gravity =
-            Gravity.TOP or
-                Gravity.START
-
-        frame.addView(
-            tab,
-            tabParams
-        )
-
-        /*
-         * Click
-         */
 
         frame.setOnClickListener {
 
@@ -261,9 +207,8 @@ class ColorsActivity : Activity() {
         return frame
     }
 
-    private fun roundedBackground(
-        color: Int,
-        radius: Int
+    private fun createFolderBody(
+        color: Int
     ): GradientDrawable {
 
         return GradientDrawable().apply {
@@ -272,30 +217,36 @@ class ColorsActivity : Activity() {
                 color
             )
 
-            cornerRadius =
-                dp(radius).toFloat()
+            cornerRadii =
+                floatArrayOf(
+                    0f,
+                    0f,
+                    dp(5).toFloat(),
+                    dp(5).toFloat(),
+                    dp(5).toFloat(),
+                    dp(5).toFloat(),
+                    dp(5).toFloat(),
+                    dp(5).toFloat()
+                )
         }
     }
 
-    private fun roundedTopBackground(
-        color: Int,
-        radius: Int
+    private fun createFolderTab(
+        color: Int
     ): GradientDrawable {
 
         return GradientDrawable().apply {
 
             setColor(
-                darkenColor(
-                    color
-                )
+                color
             )
 
             cornerRadii =
                 floatArrayOf(
-                    dp(radius).toFloat(),
-                    dp(radius).toFloat(),
-                    dp(radius).toFloat(),
-                    dp(radius).toFloat(),
+                    dp(10).toFloat(),
+                    dp(10).toFloat(),
+                    dp(10).toFloat(),
+                    dp(10).toFloat(),
                     0f,
                     0f,
                     0f,
@@ -304,30 +255,7 @@ class ColorsActivity : Activity() {
         }
     }
 
-    private fun darkenColor(
-        color: Int
-    ): Int {
-
-        val red =
-            (Color.red(color) * 0.82f)
-                .toInt()
-
-        val green =
-            (Color.green(color) * 0.82f)
-                .toInt()
-
-        val blue =
-            (Color.blue(color) * 0.82f)
-                .toInt()
-
-        return Color.rgb(
-            red,
-            green,
-            blue
-        )
-    }
-
-    private fun getTextColor(
+    private fun getReadableTextColor(
         color: Int
     ): Int {
 
@@ -341,11 +269,8 @@ class ColorsActivity : Activity() {
         return if (
             brightness > 165
         ) {
-
             Color.BLACK
-
         } else {
-
             Color.WHITE
         }
     }
