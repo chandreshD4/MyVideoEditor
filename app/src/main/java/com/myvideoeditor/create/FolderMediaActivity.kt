@@ -509,8 +509,9 @@ class FolderMediaActivity : Activity() {
                     text =
                         "✓"
 
-                    textColor =
+                   setTextColor (
                         Color.WHITE
+                    )
 
                     textSize =
                         16f
