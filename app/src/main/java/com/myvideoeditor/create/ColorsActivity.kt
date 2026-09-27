@@ -16,8 +16,12 @@ import com.myvideoeditor.R
 class ColorsActivity : Activity() {
 
     companion object {
-        const val EXTRA_COLOR = "selected_color"
-        const val EXTRA_COLOR_NAME = "selected_color_name"
+
+        const val EXTRA_COLOR =
+            "selected_color"
+
+        const val EXTRA_COLOR_NAME =
+            "selected_color_name"
     }
 
     private val colors =
@@ -35,6 +39,18 @@ class ColorsActivity : Activity() {
             "Deep Blue" to Color.rgb(63, 81, 181),
             "Brown" to Color.rgb(121, 85, 72)
         )
+
+    private var selectedIndex =
+        0
+
+    private var selectedColor =
+        Color.BLACK
+
+    private var selectedColorName =
+        "Black"
+
+    private val checkViews =
+        ArrayList<TextView>()
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -64,6 +80,7 @@ class ColorsActivity : Activity() {
 
             val card =
                 createColorFolder(
+                    index,
                     name,
                     color
                 )
@@ -71,9 +88,11 @@ class ColorsActivity : Activity() {
             val params =
                 GridLayout.LayoutParams().apply {
 
-                    width = 0
+                    width =
+                        0
 
-                    height = dp(100)
+                    height =
+                        dp(100)
 
                     columnSpec =
                         GridLayout.spec(
@@ -100,18 +119,31 @@ class ColorsActivity : Activity() {
         ).setOnClickListener {
             finish()
         }
+
+        findViewById<TextView>(
+            R.id.colorsContinue
+        ).setOnClickListener {
+            continueWithColor()
+        }
+
+        updateSelection()
     }
 
     private fun createColorFolder(
+        index: Int,
         name: String,
         color: Int
     ): FrameLayout {
 
         val frame =
-            FrameLayout(this)
+            FrameLayout(
+                this
+            )
 
         val body =
-            FrameLayout(this).apply {
+            FrameLayout(
+                this
+            ).apply {
 
                 background =
                     createFolderBody(
@@ -134,7 +166,9 @@ class ColorsActivity : Activity() {
         )
 
         val tab =
-            View(this).apply {
+            View(
+                this
+            ).apply {
 
                 background =
                     createFolderTab(
@@ -149,7 +183,8 @@ class ColorsActivity : Activity() {
             )
 
         tabParams.gravity =
-            Gravity.TOP or Gravity.START
+            Gravity.TOP or
+                Gravity.START
 
         frame.addView(
             tab,
@@ -157,7 +192,9 @@ class ColorsActivity : Activity() {
         )
 
         val title =
-            TextView(this).apply {
+            TextView(
+                this
+            ).apply {
 
                 gravity =
                     Gravity.CENTER
@@ -179,7 +216,8 @@ class ColorsActivity : Activity() {
                     )
                 )
 
-                maxLines = 1
+                maxLines =
+                    1
             }
 
         val titleParams =
@@ -196,15 +234,119 @@ class ColorsActivity : Activity() {
             titleParams
         )
 
+        val check =
+            TextView(
+                this
+            ).apply {
+
+                gravity =
+                    Gravity.CENTER
+
+                text =
+                    "✓"
+
+                setTextColor(
+                    Color.WHITE
+                )
+
+                textSize =
+                    16f
+
+                setTypeface(
+                    null,
+                    android.graphics.Typeface.BOLD
+                )
+
+                background =
+                    createCheckBackground()
+
+                visibility =
+                    View.GONE
+            }
+
+        val checkParams =
+            FrameLayout.LayoutParams(
+                dp(28),
+                dp(28)
+            )
+
+        checkParams.gravity =
+            Gravity.TOP or
+                Gravity.END
+
+        checkParams.setMargins(
+            0,
+            dp(20),
+            dp(5),
+            0
+        )
+
+        frame.addView(
+            check,
+            checkParams
+        )
+
+        checkViews.add(
+            check
+        )
+
         frame.setOnClickListener {
 
-            selectColor(
-                name,
+            selectedIndex =
+                index
+
+            selectedColor =
                 color
-            )
+
+            selectedColorName =
+                name
+
+            updateSelection()
         }
 
         return frame
+    }
+
+    private fun updateSelection() {
+
+        for (
+            index in checkViews.indices
+        ) {
+
+            checkViews[index].visibility =
+                if (
+                    index ==
+                    selectedIndex
+                ) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
+        }
+    }
+
+    private fun continueWithColor() {
+
+        val result =
+            Intent().apply {
+
+                putExtra(
+                    EXTRA_COLOR,
+                    selectedColor
+                )
+
+                putExtra(
+                    EXTRA_COLOR_NAME,
+                    selectedColorName
+                )
+            }
+
+        setResult(
+            RESULT_OK,
+            result
+        )
+
+        finish()
     }
 
     private fun createFolderBody(
@@ -255,6 +397,29 @@ class ColorsActivity : Activity() {
         }
     }
 
+    private fun createCheckBackground():
+        GradientDrawable {
+
+        return GradientDrawable().apply {
+
+            shape =
+                GradientDrawable.OVAL
+
+            setColor(
+                Color.rgb(
+                    20,
+                    190,
+                    95
+                )
+            )
+
+            setStroke(
+                dp(2),
+                Color.WHITE
+            )
+        }
+    }
+
     private fun getReadableTextColor(
         color: Int
     ): Int {
@@ -273,33 +438,6 @@ class ColorsActivity : Activity() {
         } else {
             Color.WHITE
         }
-    }
-
-    private fun selectColor(
-        name: String,
-        color: Int
-    ) {
-
-        val result =
-            Intent().apply {
-
-                putExtra(
-                    EXTRA_COLOR,
-                    color
-                )
-
-                putExtra(
-                    EXTRA_COLOR_NAME,
-                    name
-                )
-            }
-
-        setResult(
-            RESULT_OK,
-            result
-        )
-
-        finish()
     }
 
     private fun dp(

@@ -9,7 +9,9 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Size
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -34,12 +36,20 @@ class FolderMediaActivity : Activity() {
             "selected_uri"
     }
 
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView:
+        RecyclerView
 
-    private lateinit var emptyText: TextView
+    private lateinit var emptyText:
+        TextView
+
+    private lateinit var continueButton:
+        TextView
 
     private val mediaItems =
         ArrayList<FolderMedia>()
+
+    private var selectedPosition =
+        RecyclerView.NO_POSITION
 
     private var folderName =
         "Media"
@@ -80,13 +90,13 @@ class FolderMediaActivity : Activity() {
         findViewById<TextView>(
             R.id.folderBack
         ).setOnClickListener {
-
             finish()
         }
 
         findViewById<TextView>(
             R.id.folderTitle
-        ).text = folderName
+        ).text =
+            folderName
 
         emptyText =
             findViewById(
@@ -96,6 +106,11 @@ class FolderMediaActivity : Activity() {
         recyclerView =
             findViewById(
                 R.id.folderRecycler
+            )
+
+        continueButton =
+            findViewById(
+                R.id.folderContinue
             )
 
         recyclerView.layoutManager =
@@ -112,6 +127,10 @@ class FolderMediaActivity : Activity() {
                 mediaItems
             )
 
+        continueButton.setOnClickListener {
+            continueWithSelectedMedia()
+        }
+
         loadFolderMedia()
     }
 
@@ -119,6 +138,9 @@ class FolderMediaActivity : Activity() {
 
         emptyText.text =
             "Loading media..."
+
+        emptyText.visibility =
+            View.VISIBLE
 
         Thread {
 
@@ -133,6 +155,9 @@ class FolderMediaActivity : Activity() {
                     result
                 )
 
+                selectedPosition =
+                    RecyclerView.NO_POSITION
+
                 recyclerView.adapter
                     ?.notifyDataSetChanged()
 
@@ -141,7 +166,7 @@ class FolderMediaActivity : Activity() {
                 ) {
 
                     emptyText.visibility =
-                        TextView.VISIBLE
+                        View.VISIBLE
 
                     emptyText.text =
                         "No photos or videos found"
@@ -149,7 +174,7 @@ class FolderMediaActivity : Activity() {
                 } else {
 
                     emptyText.visibility =
-                        TextView.GONE
+                        View.GONE
                 }
             }
 
@@ -176,7 +201,9 @@ class FolderMediaActivity : Activity() {
             )
 
         val selection: String
-        val selectionArgs: Array<String>
+
+        val selectionArgs:
+            Array<String>
 
         if (
             Build.VERSION.SDK_INT >= 29 &&
@@ -190,8 +217,12 @@ class FolderMediaActivity : Activity() {
 
             selectionArgs =
                 arrayOf(
-                    MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(),
-                    MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString(),
+                    MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
+                        .toString(),
+
+                    MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
+                        .toString(),
+
                     folderPath!!
                 )
 
@@ -206,8 +237,12 @@ class FolderMediaActivity : Activity() {
 
             selectionArgs =
                 arrayOf(
-                    MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(),
-                    MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString(),
+                    MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
+                        .toString(),
+
+                    MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
+                        .toString(),
+
                     bucketName!!
                 )
 
@@ -219,8 +254,11 @@ class FolderMediaActivity : Activity() {
 
             selectionArgs =
                 arrayOf(
-                    MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(),
-                    MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString()
+                    MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
+                        .toString(),
+
+                    MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
+                        .toString()
                 )
         }
 
@@ -253,6 +291,13 @@ class FolderMediaActivity : Activity() {
                     cursor.moveToNext()
                 ) {
 
+                    if (
+                        idIndex < 0 ||
+                        typeIndex < 0
+                    ) {
+                        continue
+                    }
+
                     val id =
                         cursor.getLong(
                             idIndex
@@ -267,13 +312,10 @@ class FolderMediaActivity : Activity() {
                         if (
                             nameIndex >= 0
                         ) {
-
                             cursor.getString(
                                 nameIndex
-                            )
-
+                            ) ?: "Media"
                         } else {
-
                             "Media"
                         }
 
@@ -298,9 +340,14 @@ class FolderMediaActivity : Activity() {
 
                     result.add(
                         FolderMedia(
-                            name,
-                            itemUri,
-                            type
+                            name =
+                                name,
+
+                            uri =
+                                itemUri,
+
+                            mediaType =
+                                type
                         )
                     )
                 }
@@ -314,6 +361,51 @@ class FolderMediaActivity : Activity() {
         return result
     }
 
+    private fun continueWithSelectedMedia() {
+
+        if (
+            selectedPosition ==
+            RecyclerView.NO_POSITION
+        ) {
+
+            emptyText.visibility =
+                View.VISIBLE
+
+            emptyText.text =
+                "Please select a photo or video"
+
+            return
+        }
+
+        if (
+            selectedPosition >=
+            mediaItems.size
+        ) {
+            return
+        }
+
+        val selected =
+            mediaItems[
+                selectedPosition
+            ]
+
+        val result =
+            Intent().apply {
+
+                putExtra(
+                    EXTRA_SELECTED_URI,
+                    selected.uri.toString()
+                )
+            }
+
+        setResult(
+            RESULT_OK,
+            result
+        )
+
+        finish()
+    }
+
     private inner class FolderMediaAdapter(
         private val items:
             List<FolderMedia>
@@ -322,7 +414,7 @@ class FolderMediaActivity : Activity() {
     >() {
 
         inner class Holder(
-            val card: LinearLayout
+            val card: FrameLayout
         ) : RecyclerView.ViewHolder(
             card
         )
@@ -333,27 +425,9 @@ class FolderMediaActivity : Activity() {
         ): Holder {
 
             val card =
-                LinearLayout(
+                FrameLayout(
                     parent.context
-                ).apply {
-
-                    orientation =
-                        LinearLayout.VERTICAL
-
-                    gravity =
-                        Gravity.CENTER
-
-                    setPadding(
-                        dp(5),
-                        dp(22),
-                        dp(5),
-                        dp(5)
-                    )
-
-                    setBackgroundResource(
-                        R.drawable.bg_folder_card
-                    )
-                }
+                )
 
             val image =
                 ImageView(
@@ -365,16 +439,16 @@ class FolderMediaActivity : Activity() {
 
                     setBackgroundColor(
                         Color.rgb(
-                            10,
-                            13,
-                            18
+                            12,
+                            15,
+                            20
                         )
                     )
                 }
 
             card.addView(
                 image,
-                LinearLayout.LayoutParams(
+                FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     dp(88)
                 )
@@ -393,37 +467,99 @@ class FolderMediaActivity : Activity() {
                     )
 
                     textSize =
-                        11f
+                        10f
 
-                    maxLines = 2
+                    maxLines =
+                        1
 
-                    setPadding(
-                        dp(2),
-                        dp(5),
-                        dp(2),
-                        dp(2)
+                    ellipsize =
+                        android.text.TextUtils.TruncateAt.END
+
+                    setBackgroundColor(
+                        Color.rgb(
+                            20,
+                            24,
+                            31
+                        )
                     )
                 }
 
+            val titleParams =
+                FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    dp(24)
+                )
+
+            titleParams.gravity =
+                Gravity.BOTTOM
+
             card.addView(
                 title,
-                LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(34)
+                titleParams
+            )
+
+            val check =
+                TextView(
+                    parent.context
+                ).apply {
+
+                    gravity =
+                        Gravity.CENTER
+
+                    text =
+                        "✓"
+
+                    textColor =
+                        Color.WHITE
+
+                    textSize =
+                        16f
+
+                    setTypeface(
+                        null,
+                        android.graphics.Typeface.BOLD
+                    )
+
+                    background =
+                        createCheckBackground()
+
+                    visibility =
+                        View.GONE
+                }
+
+            val checkParams =
+                FrameLayout.LayoutParams(
+                    dp(30),
+                    dp(30)
                 )
+
+            checkParams.gravity =
+                Gravity.TOP or
+                    Gravity.END
+
+            checkParams.setMargins(
+                0,
+                dp(5),
+                dp(5),
+                0
+            )
+
+            card.addView(
+                check,
+                checkParams
             )
 
             val params =
                 RecyclerView.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(155)
+                    dp(118)
                 )
 
             params.setMargins(
-                dp(5),
-                dp(5),
-                dp(5),
-                dp(5)
+                dp(4),
+                dp(4),
+                dp(4),
+                dp(4)
             )
 
             card.layoutParams =
@@ -452,8 +588,23 @@ class FolderMediaActivity : Activity() {
                     1
                 ) as TextView
 
+            val check =
+                holder.card.getChildAt(
+                    2
+                ) as TextView
+
             title.text =
                 item.name
+
+            check.visibility =
+                if (
+                    position ==
+                    selectedPosition
+                ) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
 
             image.setImageResource(
                 android.R.drawable.ic_menu_gallery
@@ -471,8 +622,8 @@ class FolderMediaActivity : Activity() {
                             contentResolver.loadThumbnail(
                                 item.uri,
                                 Size(
-                                    dp(250),
-                                    dp(180)
+                                    dp(220),
+                                    dp(160)
                                 ),
                                 null
                             )
@@ -500,21 +651,25 @@ class FolderMediaActivity : Activity() {
 
             holder.card.setOnClickListener {
 
-                val result =
-                    Intent().apply {
+                val oldPosition =
+                    selectedPosition
 
-                        putExtra(
-                            EXTRA_SELECTED_URI,
-                            item.uri.toString()
-                        )
-                    }
+                selectedPosition =
+                    holder.bindingAdapterPosition
 
-                setResult(
-                    RESULT_OK,
-                    result
+                if (
+                    oldPosition !=
+                    RecyclerView.NO_POSITION
+                ) {
+
+                    notifyItemChanged(
+                        oldPosition
+                    )
+                }
+
+                notifyItemChanged(
+                    selectedPosition
                 )
-
-                finish()
             }
         }
 
@@ -522,6 +677,29 @@ class FolderMediaActivity : Activity() {
             Int {
 
             return items.size
+        }
+    }
+
+    private fun createCheckBackground():
+        android.graphics.drawable.GradientDrawable {
+
+        return android.graphics.drawable.GradientDrawable().apply {
+
+            shape =
+                android.graphics.drawable.GradientDrawable.OVAL
+
+            setColor(
+                Color.rgb(
+                    20,
+                    190,
+                    95
+                )
+            )
+
+            setStroke(
+                dp(2),
+                Color.WHITE
+            )
         }
     }
 
@@ -538,6 +716,6 @@ class FolderMediaActivity : Activity() {
         return (
             value *
                 resources.displayMetrics.density
-        ).toInt()
+            ).toInt()
     }
 }
