@@ -1,206 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="#080A0F"
-    android:fillViewport="true"
-    android:scrollbars="none">
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="20dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:id="@+id/mediaBack"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:gravity="center"
-                android:text="‹"
-                android:textColor="#FFFFFF"
-                android:textSize="34sp" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:paddingStart="6dp"
-                android:text="Choose Media"
-                android:textColor="#FFFFFF"
-                android:textSize="19sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/mediaClose"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:gravity="center"
-                android:text="×"
-                android:textColor="#FFFFFF"
-                android:textSize="30sp" />
-
-        </LinearLayout>
+        android:layout_height="56dp"
+        android:gravity="center_vertical">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Choose your media source"
-            android:textColor="#9EA6B5"
-            android:textSize="14sp" />
-
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:columnCount="3"
-            android:rowCount="2"
-            android:alignmentMode="alignMargins"
-            android:columnOrderPreserved="false">
-
-            <TextView
-                android:id="@+id/importButton"
-                android:layout_width="0dp"
-                android:layout_height="112dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                android:background="#18283A"
-                android:gravity="center"
-                android:text="▣&#10;MEDIA&#10;Photo &amp; Video"
-                android:textColor="#5DD7FF"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/colorsBox"
-                android:layout_width="0dp"
-                android:layout_height="112dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                android:background="#302719"
-                android:gravity="center"
-                android:text="●&#10;COLORS&#10;Black"
-                android:textColor="#FFD75A"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/mediaDevice"
-                android:layout_width="0dp"
-                android:layout_height="112dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                android:background="#211C35"
-                android:gravity="center"
-                android:text="▤&#10;DEVICE&#10;Files"
-                android:textColor="#C7A8FF"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/mediaPhotos"
-                android:layout_width="0dp"
-                android:layout_height="112dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                android:background="#203228"
-                android:gravity="center"
-                android:text="▧&#10;PHOTOS&#10;Gallery"
-                android:textColor="#72E6A7"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/boxFive"
-                android:layout_width="0dp"
-                android:layout_height="112dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                android:background="#34202A"
-                android:gravity="center"
-                android:text="♫&#10;AUDIO&#10;Music"
-                android:textColor="#FF91B0"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/boxSix"
-                android:layout_width="0dp"
-                android:layout_height="112dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                android:background="#202E34"
-                android:gravity="center"
-                android:text="＋&#10;MORE&#10;Sources"
-                android:textColor="#70DDE8"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-        </GridLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:layout_marginBottom="5dp"
-            android:text="Your Media"
-            android:textColor="#F1F3F8"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/mediaEmptyText"
-            android:layout_width="match_parent"
-            android:layout_height="32dp"
+            android:id="@+id/mediaBack"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             android:gravity="center"
-            android:text="Scanning your media..."
-            android:textColor="#55D8FF"
-            android:textSize="13sp" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/mediaFoldersRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
-            android:overScrollMode="never"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp" />
-
-        <TextView
-            android:id="@+id/seeAllButton"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="4dp"
-            android:gravity="center"
-            android:text="SEE ALL  ›"
-            android:textColor="#1689FF"
-            android:textSize="17sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/backgroundDone"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/bg_create_button"
-            android:gravity="center"
-            android:text="Continue"
+            android:text="‹"
             android:textColor="#FFFFFF"
-            android:textSize="17sp"
+            android:textSize="34sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:paddingStart="6dp"
+            android:text="Choose Media"
+            android:textColor="#FFFFFF"
+            android:textSize="19sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/mediaClose"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:gravity="center"
+            android:text="×"
+            android:textColor="#FFFFFF"
+            android:textSize="30sp" />
 
     </LinearLayout>
 
-</ScrollView>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Choose your media source"
+        android:textColor="#9EA6B5"
+        android:textSize="14sp" />
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:columnCount="3"
+        android:rowCount="2"
+        android:alignmentMode="alignMargins"
+        android:columnOrderPreserved="false">
+
+        <TextView
+            android:id="@+id/importButton"
+            android:layout_width="0dp"
+            android:layout_height="112dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:background="#18283A"
+            android:gravity="center"
+            android:text="▣&#10;MEDIA&#10;Photo &amp; Video"
+            android:textColor="#5DD7FF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/colorsBox"
+            android:layout_width="0dp"
+            android:layout_height="112dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:background="#302719"
+            android:gravity="center"
+            android:text="●&#10;COLORS&#10;Choose"
+            android:textColor="#FFD75A"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/mediaDevice"
+            android:layout_width="0dp"
+            android:layout_height="112dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:background="#211C35"
+            android:gravity="center"
+            android:text="▤&#10;DEVICE&#10;Files"
+            android:textColor="#C7A8FF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/mediaPhotos"
+            android:layout_width="0dp"
+            android:layout_height="112dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:background="#203228"
+            android:gravity="center"
+            android:text="▧&#10;PHOTOS&#10;Gallery"
+            android:textColor="#72E6A7"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/boxFive"
+            android:layout_width="0dp"
+            android:layout_height="112dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:background="#34202A"
+            android:gravity="center"
+            android:text="♫&#10;AUDIO&#10;Music"
+            android:textColor="#FF91B0"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/boxSix"
+            android:layout_width="0dp"
+            android:layout_height="112dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:background="#202E34"
+            android:gravity="center"
+            android:text="＋&#10;MORE&#10;Sources"
+            android:textColor="#70DDE8"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+    </GridLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="4dp"
+        android:text="Your Media"
+        android:textColor="#F1F3F8"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/mediaEmptyText"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="Scanning your media..."
+        android:textColor="#55D8FF"
+        android:textSize="13sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/mediaFoldersRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:nestedScrollingEnabled="true"
+        android:overScrollMode="never"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:scrollbars="vertical" />
+
+    <TextView
+        android:id="@+id/seeAllButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="2dp"
+        android:gravity="center"
+        android:text="SEE ALL  ›"
+        android:textColor="#1689FF"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/backgroundDone"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/bg_create_button"
+        android:gravity="center"
+        android:text="Continue"
+        android:textColor="#FFFFFF"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

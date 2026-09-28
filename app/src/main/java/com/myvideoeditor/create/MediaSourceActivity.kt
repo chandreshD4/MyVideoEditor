@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.myvideoeditor.R
@@ -64,7 +65,10 @@ class MediaSourceActivity : Activity() {
         Color.BLACK
 
     private var selectedColorName =
-        "Black"
+        ""
+
+    private var hasSelectedColor =
+        false
 
     private lateinit var colorsBox:
         TextView
@@ -158,7 +162,11 @@ class MediaSourceActivity : Activity() {
             )
 
         mediaRecycler.isNestedScrollingEnabled =
+            true
+
+        mediaRecycler.setHasFixedSize(
             false
+        )
 
         mediaRecycler.adapter =
             MediaFolderAdapter(
@@ -223,6 +231,15 @@ class MediaSourceActivity : Activity() {
 
             mediaRecycler.adapter
                 ?.notifyDataSetChanged()
+
+            if (showAllFolders) {
+
+                mediaRecycler.post {
+                    mediaRecycler.scrollToPosition(
+                        0
+                    )
+                }
+            }
         }
 
         findViewById<TextView>(
@@ -331,6 +348,7 @@ class MediaSourceActivity : Activity() {
             requestCode ==
             REQUEST_PERMISSION
         ) {
+
             loadMediaFolders()
         }
     }
@@ -667,6 +685,7 @@ class MediaSourceActivity : Activity() {
 
         return "unknown"
     }
+
     private fun openMediaPicker() {
 
         val intent =
@@ -843,10 +862,44 @@ class MediaSourceActivity : Activity() {
 
     private fun updateSelectedColor() {
 
+        if (
+            !hasSelectedColor ||
+            selectedColorName.isBlank()
+        ) {
+
+            colorsBox.text =
+                "●\nCOLORS\nChoose"
+
+            colorsBox.background =
+                GradientDrawable().apply {
+
+                    setColor(
+                        Color.rgb(
+                            48,
+                            39,
+                            25
+                        )
+                    )
+
+                    cornerRadius =
+                        dp(10).toFloat()
+                }
+
+            colorsBox.setTextColor(
+                Color.rgb(
+                    255,
+                    215,
+                    90
+                )
+            )
+
+            return
+        }
+
         colorsBox.text =
             "●\nCOLORS\n$selectedColorName"
 
-        val drawable =
+        colorsBox.background =
             GradientDrawable().apply {
 
                 setColor(
@@ -857,9 +910,6 @@ class MediaSourceActivity : Activity() {
                     dp(10).toFloat()
             }
 
-        colorsBox.background =
-            drawable
-
         colorsBox.setTextColor(
             getReadableTextColor(
                 selectedColor
@@ -868,6 +918,23 @@ class MediaSourceActivity : Activity() {
     }
 
     private fun continueToEditor() {
+
+        val hasMedia =
+            !mediaUri.isNullOrBlank()
+
+        if (
+            !hasMedia &&
+            !hasSelectedColor
+        ) {
+
+            Toast.makeText(
+                this,
+                "Please select a photo, video, or background color",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return
+        }
 
         val intent =
             Intent(
@@ -887,16 +954,28 @@ class MediaSourceActivity : Activity() {
 
                 putExtra(
                     EditorActivity.EXTRA_SOURCE_TYPE,
-                    sourceType
+                    if (
+                        hasMedia
+                    ) {
+                        sourceType
+                    } else {
+                        "blank"
+                    }
                 )
 
                 putExtra(
                     EditorActivity.EXTRA_BACKGROUND_COLOR,
-                    selectedColor
+                    if (
+                        hasSelectedColor
+                    ) {
+                        selectedColor
+                    } else {
+                        Color.BLACK
+                    }
                 )
 
                 if (
-                    !mediaUri.isNullOrBlank()
+                    hasMedia
                 ) {
 
                     putExtra(
@@ -989,6 +1068,17 @@ class MediaSourceActivity : Activity() {
 
             REQUEST_COLOR -> {
 
+                val colorName =
+                    data.getStringExtra(
+                        ColorsActivity.EXTRA_COLOR_NAME
+                    )
+
+                if (
+                    colorName.isNullOrBlank()
+                ) {
+                    return
+                }
+
                 selectedColor =
                     data.getIntExtra(
                         ColorsActivity.EXTRA_COLOR,
@@ -996,10 +1086,10 @@ class MediaSourceActivity : Activity() {
                     )
 
                 selectedColorName =
-                    data.getStringExtra(
-                        ColorsActivity.EXTRA_COLOR_NAME
-                    )
-                        ?: "Black"
+                    colorName
+
+                hasSelectedColor =
+                    true
 
                 updateSelectedColor()
             }
@@ -1035,6 +1125,18 @@ class MediaSourceActivity : Activity() {
                     folderUri != null
                 ) {
 
+                    try {
+
+                        contentResolver.takePersistableUriPermission(
+                            folderUri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        )
+
+                    } catch (
+                        _: Exception
+                    ) {
+                    }
+
                     sourceType =
                         "blank"
                 }
@@ -1069,6 +1171,7 @@ class MediaSourceActivity : Activity() {
             "image"
         }
     }
+
     private inner class MediaFolderAdapter(
         private val items: List<MediaFolder>
     ) : RecyclerView.Adapter<MediaFolderAdapter.Holder>() {
@@ -1329,10 +1432,6 @@ class MediaSourceActivity : Activity() {
 
             }.start()
 
-            /*
-             * Folder cards are NOT selectable.
-             * Clicking a folder opens that folder.
-             */
             holder.card.setOnClickListener {
 
                 openFolder(

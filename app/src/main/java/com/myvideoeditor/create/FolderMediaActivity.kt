@@ -3,6 +3,7 @@ package com.myvideoeditor.create
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -13,8 +14,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.myvideoeditor.R
@@ -63,7 +64,6 @@ class FolderMediaActivity : Activity() {
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
-
         super.onCreate(
             savedInstanceState
         )
@@ -95,8 +95,7 @@ class FolderMediaActivity : Activity() {
 
         findViewById<TextView>(
             R.id.folderTitle
-        ).text =
-            folderName
+        ).text = folderName
 
         emptyText =
             findViewById(
@@ -120,7 +119,11 @@ class FolderMediaActivity : Activity() {
             )
 
         recyclerView.isNestedScrollingEnabled =
+            true
+
+        recyclerView.setHasFixedSize(
             false
+        )
 
         recyclerView.adapter =
             FolderMediaAdapter(
@@ -312,17 +315,20 @@ class FolderMediaActivity : Activity() {
                         if (
                             nameIndex >= 0
                         ) {
+
                             cursor.getString(
                                 nameIndex
                             ) ?: "Media"
+
                         } else {
+
                             "Media"
                         }
 
                     val itemUri =
                         if (
                             type ==
-                            MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
+                                MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
                         ) {
 
                             Uri.withAppendedPath(
@@ -340,14 +346,9 @@ class FolderMediaActivity : Activity() {
 
                     result.add(
                         FolderMedia(
-                            name =
-                                name,
-
-                            uri =
-                                itemUri,
-
-                            mediaType =
-                                type
+                            name = name,
+                            uri = itemUri,
+                            mediaType = type
                         )
                     )
                 }
@@ -368,11 +369,11 @@ class FolderMediaActivity : Activity() {
             RecyclerView.NO_POSITION
         ) {
 
-            emptyText.visibility =
-                View.VISIBLE
-
-            emptyText.text =
-                "Please select a photo or video"
+            Toast.makeText(
+                this,
+                "Please select a photo or video",
+                Toast.LENGTH_SHORT
+            ).show()
 
             return
         }
@@ -381,6 +382,13 @@ class FolderMediaActivity : Activity() {
             selectedPosition >=
             mediaItems.size
         ) {
+
+            Toast.makeText(
+                this,
+                "Please select a photo or video",
+                Toast.LENGTH_SHORT
+            ).show()
+
             return
         }
 
@@ -509,7 +517,7 @@ class FolderMediaActivity : Activity() {
                     text =
                         "✓"
 
-                   setTextColor (
+                    setTextColor(
                         Color.WHITE
                     )
 
@@ -602,61 +610,54 @@ class FolderMediaActivity : Activity() {
                     position ==
                     selectedPosition
                 ) {
+
                     View.VISIBLE
+
                 } else {
+
                     View.GONE
                 }
+
+            image.tag =
+                item.uri.toString()
 
             image.setImageResource(
                 android.R.drawable.ic_menu_gallery
             )
 
-            Thread {
-
-                try {
-
-                    if (
-                        Build.VERSION.SDK_INT >= 29
-                    ) {
-
-                        val bitmap =
-                            contentResolver.loadThumbnail(
-                                item.uri,
-                                Size(
-                                    dp(220),
-                                    dp(160)
-                                ),
-                                null
-                            )
-
-                        runOnUiThread {
-
-                            if (
-                                holder.bindingAdapterPosition ==
-                                position
-                            ) {
-
-                                image.setImageBitmap(
-                                    bitmap
-                                )
-                            }
-                        }
-                    }
-
-                } catch (
-                    _: Exception
-                ) {
-                }
-
-            }.start()
+            loadThumbnail(
+                image,
+                item.uri
+            )
 
             holder.card.setOnClickListener {
+
+                val clickedPosition =
+                    holder.bindingAdapterPosition
+
+                if (
+                    clickedPosition ==
+                    RecyclerView.NO_POSITION
+                ) {
+                    return@setOnClickListener
+                }
 
                 val oldPosition =
                     selectedPosition
 
-                selectedPosition =
-                    holder.bindingAdapterPosition
+                if (
+                    selectedPosition ==
+                    clickedPosition
+                ) {
+
+                    selectedPosition =
+                        RecyclerView.NO_POSITION
+
+                } else {
+
+                    selectedPosition =
+                        clickedPosition
+                }
 
                 if (
                     oldPosition !=
@@ -668,10 +669,64 @@ class FolderMediaActivity : Activity() {
                     )
                 }
 
-                notifyItemChanged(
-                    selectedPosition
-                )
+                if (
+                    selectedPosition !=
+                    RecyclerView.NO_POSITION
+                ) {
+
+                    notifyItemChanged(
+                        selectedPosition
+                    )
+                }
             }
+        }
+
+        private fun loadThumbnail(
+            image: ImageView,
+            uri: Uri
+        ) {
+
+            if (
+                Build.VERSION.SDK_INT < 29
+            ) {
+                return
+            }
+
+            val uriString =
+                uri.toString()
+
+            Thread {
+
+                try {
+
+                    val bitmap: Bitmap =
+                        contentResolver.loadThumbnail(
+                            uri,
+                            Size(
+                                dp(220),
+                                dp(160)
+                            ),
+                            null
+                        )
+
+                    runOnUiThread {
+
+                        if (
+                            image.tag ==
+                            uriString
+                        ) {
+
+                            image.setImageBitmap(
+                                bitmap
+                            )
+                        }
+                    }
+
+                } catch (
+                    _: Exception
+                ) {
+                }
+            }.start()
         }
 
         override fun getItemCount():
@@ -717,6 +772,6 @@ class FolderMediaActivity : Activity() {
         return (
             value *
                 resources.displayMetrics.density
-            ).toInt()
+        ).toInt()
     }
 }
