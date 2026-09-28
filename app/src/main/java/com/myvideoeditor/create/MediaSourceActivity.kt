@@ -107,7 +107,6 @@ class MediaSourceActivity : Activity() {
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
-
         super.onCreate(
             savedInstanceState
         )
@@ -232,13 +231,11 @@ class MediaSourceActivity : Activity() {
             mediaRecycler.adapter
                 ?.notifyDataSetChanged()
 
-            if (showAllFolders) {
+            mediaRecycler.post {
 
-                mediaRecycler.post {
-                    mediaRecycler.scrollToPosition(
-                        0
-                    )
-                }
+                mediaRecycler.scrollToPosition(
+                    0
+                )
             }
         }
 
@@ -251,7 +248,9 @@ class MediaSourceActivity : Activity() {
 
     private fun updateSeeAllButton() {
 
-        if (folders.size <= 9) {
+        if (
+            folders.size <= 9
+        ) {
 
             seeAllButton.visibility =
                 View.GONE
@@ -263,9 +262,14 @@ class MediaSourceActivity : Activity() {
             View.VISIBLE
 
         seeAllButton.text =
-            if (showAllFolders) {
+            if (
+                showAllFolders
+            ) {
+
                 "SHOW LESS  ↑"
+
             } else {
+
                 "SEE ALL  ↓"
             }
     }
@@ -434,6 +438,7 @@ class MediaSourceActivity : Activity() {
             arrayOf(
                 MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
                     .toString(),
+
                 MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
                     .toString()
             )
@@ -486,6 +491,7 @@ class MediaSourceActivity : Activity() {
                         idIndex < 0 ||
                         typeIndex < 0
                     ) {
+
                         continue
                     }
 
@@ -503,10 +509,13 @@ class MediaSourceActivity : Activity() {
                         if (
                             nameIndex >= 0
                         ) {
+
                             cursor.getString(
                                 nameIndex
                             ) ?: ""
+
                         } else {
+
                             ""
                         }
 
@@ -514,10 +523,13 @@ class MediaSourceActivity : Activity() {
                         if (
                             bucketIndex >= 0
                         ) {
+
                             cursor.getString(
                                 bucketIndex
                             )
+
                         } else {
+
                             null
                         }
 
@@ -526,10 +538,13 @@ class MediaSourceActivity : Activity() {
                             Build.VERSION.SDK_INT >= 29 &&
                             pathIndex >= 0
                         ) {
+
                             cursor.getString(
                                 pathIndex
                             )
+
                         } else {
+
                             null
                         }
 
@@ -537,10 +552,13 @@ class MediaSourceActivity : Activity() {
                         if (
                             dateIndex >= 0
                         ) {
+
                             cursor.getLong(
                                 dateIndex
                             )
+
                         } else {
+
                             0L
                         }
 
@@ -561,6 +579,7 @@ class MediaSourceActivity : Activity() {
                             folderKey
                         )
                     ) {
+
                         continue
                     }
 
@@ -587,16 +606,22 @@ class MediaSourceActivity : Activity() {
                         MediaFolder(
                             name =
                                 folderName,
+
                             uri =
                                 itemUri,
+
                             mediaType =
                                 mediaType,
+
                             relativePath =
                                 relativePath,
+
                             bucketName =
                                 bucket,
+
                             latestFileName =
                                 displayName,
+
                             latestDate =
                                 dateAdded
                         )
@@ -697,7 +722,8 @@ class MediaSourceActivity : Activity() {
                     Intent.CATEGORY_OPENABLE
                 )
 
-                type = "*/*"
+                type =
+                    "*/*"
 
                 putExtra(
                     Intent.EXTRA_MIME_TYPES,
@@ -730,7 +756,8 @@ class MediaSourceActivity : Activity() {
                     Intent.CATEGORY_OPENABLE
                 )
 
-                type = "image/*"
+                type =
+                    "image/*"
 
                 addFlags(
                     Intent.FLAG_GRANT_READ_URI_PERMISSION or
@@ -755,7 +782,8 @@ class MediaSourceActivity : Activity() {
                     Intent.CATEGORY_OPENABLE
                 )
 
-                type = "audio/*"
+                type =
+                    "audio/*"
 
                 addFlags(
                     Intent.FLAG_GRANT_READ_URI_PERMISSION or
@@ -780,7 +808,8 @@ class MediaSourceActivity : Activity() {
                     Intent.CATEGORY_OPENABLE
                 )
 
-                type = "*/*"
+                type =
+                    "*/*"
 
                 addFlags(
                     Intent.FLAG_GRANT_READ_URI_PERMISSION or
@@ -917,6 +946,29 @@ class MediaSourceActivity : Activity() {
         )
     }
 
+    private fun clearMediaSelection() {
+
+        mediaUri =
+            null
+
+        sourceType =
+            "blank"
+    }
+
+    private fun clearColorSelection() {
+
+        selectedColor =
+            Color.BLACK
+
+        selectedColorName =
+            ""
+
+        hasSelectedColor =
+            false
+
+        updateSelectedColor()
+    }
+
     private fun continueToEditor() {
 
         val hasMedia =
@@ -935,6 +987,14 @@ class MediaSourceActivity : Activity() {
 
             return
         }
+
+        openEditor()
+    }
+
+    private fun openEditor() {
+
+        val hasMedia =
+            !mediaUri.isNullOrBlank()
 
         val intent =
             Intent(
@@ -957,8 +1017,11 @@ class MediaSourceActivity : Activity() {
                     if (
                         hasMedia
                     ) {
+
                         sourceType
+
                     } else {
+
                         "blank"
                     }
                 )
@@ -968,8 +1031,11 @@ class MediaSourceActivity : Activity() {
                     if (
                         hasSelectedColor
                     ) {
+
                         selectedColor
+
                     } else {
+
                         Color.BLACK
                     }
                 )
@@ -1007,6 +1073,7 @@ class MediaSourceActivity : Activity() {
             RESULT_OK ||
             data == null
         ) {
+
             return
         }
 
@@ -1022,15 +1089,18 @@ class MediaSourceActivity : Activity() {
 
                 try {
 
-                    contentResolver.takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
+                    contentResolver
+                        .takePersistableUriPermission(
+                            uri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        )
 
                 } catch (
                     _: Exception
                 ) {
                 }
+
+                clearColorSelection()
 
                 mediaUri =
                     uri.toString()
@@ -1039,6 +1109,8 @@ class MediaSourceActivity : Activity() {
                     getSourceType(
                         uri
                     )
+
+                openEditor()
             }
 
             REQUEST_AUDIO -> {
@@ -1049,21 +1121,26 @@ class MediaSourceActivity : Activity() {
 
                 try {
 
-                    contentResolver.takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
+                    contentResolver
+                        .takePersistableUriPermission(
+                            uri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        )
 
                 } catch (
                     _: Exception
                 ) {
                 }
 
+                clearColorSelection()
+
                 mediaUri =
                     uri.toString()
 
                 sourceType =
                     "audio"
+
+                openEditor()
             }
 
             REQUEST_COLOR -> {
@@ -1076,6 +1153,7 @@ class MediaSourceActivity : Activity() {
                 if (
                     colorName.isNullOrBlank()
                 ) {
+
                     return
                 }
 
@@ -1091,7 +1169,11 @@ class MediaSourceActivity : Activity() {
                 hasSelectedColor =
                     true
 
+                clearMediaSelection()
+
                 updateSelectedColor()
+
+                openEditor()
             }
 
             REQUEST_FOLDER_MEDIA -> {
@@ -1102,18 +1184,22 @@ class MediaSourceActivity : Activity() {
                     )
                         ?: return
 
-                mediaUri =
-                    uriString
-
                 val uri =
                     Uri.parse(
                         uriString
                     )
 
+                clearColorSelection()
+
+                mediaUri =
+                    uriString
+
                 sourceType =
                     getSourceType(
                         uri
                     )
+
+                openEditor()
             }
 
             REQUEST_FOLDER -> {
@@ -1127,18 +1213,26 @@ class MediaSourceActivity : Activity() {
 
                     try {
 
-                        contentResolver.takePersistableUriPermission(
-                            folderUri,
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        )
+                        contentResolver
+                            .takePersistableUriPermission(
+                                folderUri,
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            )
 
                     } catch (
                         _: Exception
                     ) {
                     }
 
-                    sourceType =
-                        "blank"
+                    clearColorSelection()
+
+                    clearMediaSelection()
+
+                    Toast.makeText(
+                        this,
+                        "Folder added successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -1158,6 +1252,7 @@ class MediaSourceActivity : Activity() {
             } catch (
                 _: Exception
             ) {
+
                 null
             }
 
@@ -1166,19 +1261,27 @@ class MediaSourceActivity : Activity() {
                 "video/"
             ) == true
         ) {
+
             "video"
+
         } else {
+
             "image"
         }
     }
 
     private inner class MediaFolderAdapter(
-        private val items: List<MediaFolder>
-    ) : RecyclerView.Adapter<MediaFolderAdapter.Holder>() {
+        private val items:
+            List<MediaFolder>
+    ) : RecyclerView.Adapter<
+        MediaFolderAdapter.Holder
+    >() {
 
         inner class Holder(
             val card: FrameLayout
-        ) : RecyclerView.ViewHolder(card)
+        ) : RecyclerView.ViewHolder(
+            card
+        )
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
@@ -1392,30 +1495,33 @@ class MediaSourceActivity : Activity() {
                 android.R.drawable.ic_menu_gallery
             )
 
+            thumbnail.tag =
+                item.uri.toString()
+
             Thread {
 
                 try {
 
                     if (
-                        Build.VERSION.SDK_INT >=
-                        29
+                        Build.VERSION.SDK_INT >= 29
                     ) {
 
                         val bitmap =
-                            contentResolver.loadThumbnail(
-                                item.uri,
-                                android.util.Size(
-                                    dp(180),
-                                    dp(120)
-                                ),
-                                null
-                            )
+                            contentResolver
+                                .loadThumbnail(
+                                    item.uri,
+                                    android.util.Size(
+                                        dp(180),
+                                        dp(120)
+                                    ),
+                                    null
+                                )
 
                         runOnUiThread {
 
                             if (
-                                holder.bindingAdapterPosition ==
-                                position
+                                thumbnail.tag ==
+                                item.uri.toString()
                             ) {
 
                                 thumbnail.setImageBitmap(
@@ -1434,9 +1540,28 @@ class MediaSourceActivity : Activity() {
 
             holder.card.setOnClickListener {
 
-                openFolder(
-                    item
-                )
+                val clickedPosition =
+                    holder.bindingAdapterPosition
+
+                if (
+                    clickedPosition ==
+                    RecyclerView.NO_POSITION
+                ) {
+
+                    return@setOnClickListener
+                }
+
+                if (
+                    clickedPosition <
+                    items.size
+                ) {
+
+                    openFolder(
+                        items[
+                            clickedPosition
+                        ]
+                    )
+                }
             }
         }
 
@@ -1446,8 +1571,11 @@ class MediaSourceActivity : Activity() {
             return if (
                 showAllFolders
             ) {
+
                 items.size
+
             } else {
+
                 minOf(
                     9,
                     items.size
@@ -1526,8 +1654,11 @@ class MediaSourceActivity : Activity() {
         return if (
             brightness > 165
         ) {
+
             Color.BLACK
+
         } else {
+
             Color.WHITE
         }
     }
