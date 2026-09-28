@@ -1374,7 +1374,7 @@ class MediaSourceActivity : Activity() {
                     )
 
                     textSize =
-                        8f
+                        9f
 
                     maxLines =
                         1
@@ -1413,8 +1413,8 @@ class MediaSourceActivity : Activity() {
 
             val tabParams =
                 FrameLayout.LayoutParams(
-                    dp(34),
-                    dp(10)
+                    dp(54),
+                    dp(16)
                 )
 
             tabParams.gravity =
@@ -1609,12 +1609,12 @@ class MediaSourceActivity : Activity() {
                 floatArrayOf(
                     0f,
                     0f,
-                    dp(5).toFloat(),
-                    dp(5).toFloat(),
-                    dp(5).toFloat(),
-                    dp(5).toFloat(),
-                    dp(5).toFloat(),
-                    dp(5).toFloat()
+                    dp(6).toFloat(),
+                    dp(6).toFloat(),
+                    dp(6).toFloat(),
+                    dp(6).toFloat(),
+                    0f,
+                    0f
                 )
         }
     }
