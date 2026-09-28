@@ -1366,12 +1366,15 @@ class MediaSourceActivity : Activity() {
                     gravity =
                         Gravity.CENTER
 
+                    includeFontPadding =
+                        false
+
                     setTextColor(
                         Color.WHITE
                     )
 
                     textSize =
-                        10f
+                        8f
 
                     maxLines =
                         1
@@ -1410,8 +1413,8 @@ class MediaSourceActivity : Activity() {
 
             val tabParams =
                 FrameLayout.LayoutParams(
-                    dp(40),
-                    dp(20)
+                    dp(34),
+                    dp(10)
                 )
 
             tabParams.gravity =
