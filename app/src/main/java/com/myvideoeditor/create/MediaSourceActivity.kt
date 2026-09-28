@@ -1288,23 +1288,29 @@ class MediaSourceActivity : Activity() {
             viewType: Int
         ): Holder {
 
+            val color =
+                folderColors[
+                    viewType %
+                        folderColors.size
+                ]
+
             val card =
                 FrameLayout(
                     parent.context
-                )
+                ).apply {
+                    background =
+                        FolderDrawable(
+                            color
+                        )
+                }
 
             val body =
                 FrameLayout(
                     parent.context
                 ).apply {
-
-                    background =
-                        createFolderBody(
-                            folderColors[
-                                viewType %
-                                    folderColors.size
-                            ]
-                        )
+                    setBackgroundColor(
+                        Color.TRANSPARENT
+                    )
                 }
 
             val bodyParams =
@@ -1397,35 +1403,6 @@ class MediaSourceActivity : Activity() {
                 titleParams
             )
 
-            val tab =
-                View(
-                    parent.context
-                ).apply {
-
-                    background =
-                        createFolderTab(
-                            folderColors[
-                                viewType %
-                                    folderColors.size
-                            ]
-                        )
-                }
-
-            val tabParams =
-                FrameLayout.LayoutParams(
-                    dp(54),
-                    dp(16)
-                )
-
-            tabParams.gravity =
-                Gravity.TOP or
-                    Gravity.START
-
-            card.addView(
-                tab,
-                tabParams
-            )
-
             val params =
                 RecyclerView.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -1476,22 +1453,13 @@ class MediaSourceActivity : Activity() {
                         folderColors.size
                 ]
 
-            body.background =
-                createFolderBody(
-                    color
-                )
-
-            val tab =
-                holder.card.getChildAt(
-                    1
-                )
-
-            tab.background =
-                createFolderTab(
+            holder.card.background =
+                FolderDrawable(
                     color
                 )
 
             title.text =
+                item.name
                 item.name
 
             thumbnail.setImageResource(
@@ -1595,27 +1563,169 @@ class MediaSourceActivity : Activity() {
         }
     }
 
-    private fun createFolderBody(
-        color: Int
-    ): GradientDrawable {
+    private inner class FolderDrawable(
+        private val folderColor: Int
+    ) : android.graphics.drawable.Drawable() {
 
-        return GradientDrawable().apply {
+        private val paint =
+            android.graphics.Paint(
+                android.graphics.Paint.ANTI_ALIAS_FLAG
+            ).apply {
+                style =
+                    android.graphics.Paint.Style.FILL
 
-            setColor(
-                color
+                color =
+                    folderColor
+            }
+
+        private val path =
+            android.graphics.Path()
+
+        private fun px(
+            value: Float
+        ): Float {
+            return value *
+                resources.displayMetrics.density
+        }
+
+        override fun draw(
+            canvas: android.graphics.Canvas
+        ) {
+            val left =
+                bounds.left.toFloat()
+
+            val top =
+                bounds.top.toFloat()
+
+            val right =
+                bounds.right.toFloat()
+
+            val bottom =
+                bounds.bottom.toFloat()
+
+            val tabWidth =
+                px(54f)
+
+            val bodyTop =
+                px(14f)
+
+            val radius =
+                px(7f)
+
+            path.reset()
+
+            // Start at upper-left of the folder body.
+            path.moveTo(
+                left,
+                bodyTop
             )
 
-            cornerRadii =
-                floatArrayOf(
-                    0f,
-                    0f,
-                    dp(6).toFloat(),
-                    dp(6).toFloat(),
-                    dp(6).toFloat(),
-                    dp(6).toFloat(),
-                    0f,
-                    0f
-                )
+            // Left side of folder body.
+            path.lineTo(
+                left,
+                bottom - radius
+            )
+
+            // Bottom-left rounded corner.
+            path.quadTo(
+                left,
+                bottom,
+                left + radius,
+                bottom
+            )
+
+            // Bottom edge.
+            path.lineTo(
+                right - radius,
+                bottom
+            )
+
+            // Bottom-right rounded corner.
+            path.quadTo(
+                right,
+                bottom,
+                right,
+                bottom - radius
+            )
+
+            // Right side.
+            path.lineTo(
+                right,
+                bodyTop + radius
+            )
+
+            // Top-right rounded corner.
+            path.quadTo(
+                right,
+                bodyTop,
+                right - radius,
+                bodyTop
+            )
+
+            // Top edge going toward the folder tab.
+            path.lineTo(
+                left + tabWidth,
+                bodyTop
+            )
+
+            // Right side of the raised tab.
+            path.lineTo(
+                left + tabWidth,
+                px(8f)
+            )
+
+            // Rounded top-right of tab.
+            path.quadTo(
+                left + tabWidth,
+                top,
+                left + tabWidth - px(8f),
+                top
+            )
+
+            // Top edge of tab.
+            path.lineTo(
+                left + px(10f),
+                top
+            )
+
+            // Rounded top-left of tab.
+            path.quadTo(
+                left,
+                top,
+                left,
+                px(10f)
+            )
+
+            // Connect tab directly into folder body.
+            path.lineTo(
+                left,
+                bodyTop
+            )
+
+            path.close()
+
+            canvas.drawPath(
+                path,
+                paint
+            )
+        }
+
+        override fun setAlpha(
+            alpha: Int
+        ) {
+            paint.alpha =
+                alpha
+        }
+
+        override fun setColorFilter(
+            colorFilter: android.graphics.ColorFilter?
+        ) {
+            paint.colorFilter =
+                colorFilter
+        }
+
+        override fun getOpacity(): Int {
+            return android.graphics.PixelFormat.TRANSLUCENT
         }
     }
 
