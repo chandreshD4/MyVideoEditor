@@ -1347,7 +1347,7 @@ class MediaSourceActivity : Activity() {
             val imageParams =
                 FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(42)
+                    dp(68)
                 )
 
             imageParams.leftMargin =
@@ -1357,7 +1357,7 @@ class MediaSourceActivity : Activity() {
                 dp(4)
 
             imageParams.topMargin =
-                dp(6)
+                dp(8)
 
             body.addView(
                 thumbnail,
@@ -1392,7 +1392,7 @@ class MediaSourceActivity : Activity() {
             val titleParams =
                 FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(9)
+                    dp(12)
                 )
 
             titleParams.gravity =
