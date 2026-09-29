@@ -1573,7 +1573,6 @@ class MediaSourceActivity : Activity() {
             ).apply {
                 style =
                     android.graphics.Paint.Style.FILL
-
                 color =
                     folderColor
             }
@@ -1607,26 +1606,32 @@ class MediaSourceActivity : Activity() {
                 px(54f)
 
             val bodyTop =
-                px(10f)
+                px(12f)
+
+            val border =
+                px(6f)
+
+            val bottomBorder =
+                px(11f)
 
             val radius =
                 px(7f)
 
+            /*
+             * OUTER FOLDER
+             */
             path.reset()
 
-            // Start at upper-left of the folder body.
             path.moveTo(
                 left,
                 bodyTop
             )
 
-            // Left side of folder body.
             path.lineTo(
                 left,
                 bottom - radius
             )
 
-            // Bottom-left rounded corner.
             path.quadTo(
                 left,
                 bottom,
@@ -1634,13 +1639,11 @@ class MediaSourceActivity : Activity() {
                 bottom
             )
 
-            // Bottom edge.
             path.lineTo(
                 right - radius,
                 bottom
             )
 
-            // Bottom-right rounded corner.
             path.quadTo(
                 right,
                 bottom,
@@ -1648,13 +1651,11 @@ class MediaSourceActivity : Activity() {
                 bottom - radius
             )
 
-            // Right side.
             path.lineTo(
                 right,
                 bodyTop + radius
             )
 
-            // Top-right rounded corner.
             path.quadTo(
                 right,
                 bodyTop,
@@ -1662,19 +1663,16 @@ class MediaSourceActivity : Activity() {
                 bodyTop
             )
 
-            // Top edge going toward the folder tab.
             path.lineTo(
                 left + tabWidth,
                 bodyTop
             )
 
-            // Right side of the raised tab.
             path.lineTo(
                 left + tabWidth,
                 px(8f)
             )
 
-            // Rounded top-right of tab.
             path.quadTo(
                 left + tabWidth,
                 top,
@@ -1682,24 +1680,16 @@ class MediaSourceActivity : Activity() {
                 top
             )
 
-            // Top edge of tab.
             path.lineTo(
                 left + px(10f),
                 top
             )
 
-            // Rounded top-left of tab.
             path.quadTo(
                 left,
                 top,
                 left,
                 px(10f)
-            )
-
-            // Connect tab directly into folder body.
-            path.lineTo(
-                left,
-                bodyTop
             )
 
             path.close()
@@ -1708,6 +1698,46 @@ class MediaSourceActivity : Activity() {
                 path,
                 paint
             )
+
+            /*
+             * INNER OPENING
+             * This cuts the center out so the
+             * thumbnail appears inside the folder
+             * just like the reference image.
+             */
+            paint.color =
+                android.graphics.Color.TRANSPARENT
+
+            paint.xfermode =
+                android.graphics.PorterDuffXfermode(
+                    android.graphics.PorterDuff.Mode.CLEAR
+                )
+
+            val innerLeft =
+                left + border
+
+            val innerTop =
+                bodyTop + border
+
+            val innerRight =
+                right - border
+
+            val innerBottom =
+                bottom - bottomBorder
+
+            canvas.drawRect(
+                innerLeft,
+                innerTop,
+                innerRight,
+                innerBottom,
+                paint
+            )
+
+            paint.xfermode =
+                null
+
+            paint.color =
+                folderColor
         }
 
         override fun setAlpha(
