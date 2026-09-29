@@ -1380,7 +1380,7 @@ class MediaSourceActivity : Activity() {
                     )
 
                     textSize =
-                        9f
+                        8f
 
                     maxLines =
                         1
@@ -1392,7 +1392,7 @@ class MediaSourceActivity : Activity() {
             val titleParams =
                 FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(12)
+                    dp(9)
                 )
 
             titleParams.gravity =
