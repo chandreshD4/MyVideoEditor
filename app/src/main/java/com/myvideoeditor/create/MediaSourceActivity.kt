@@ -1320,7 +1320,7 @@ class MediaSourceActivity : Activity() {
                 )
 
             bodyParams.topMargin =
-                dp(14)
+                dp(10)
 
             card.addView(
                 body,
@@ -1357,7 +1357,7 @@ class MediaSourceActivity : Activity() {
                 dp(4)
 
             imageParams.topMargin =
-                dp(18)
+                dp(6)
 
             body.addView(
                 thumbnail,
@@ -1607,7 +1607,7 @@ class MediaSourceActivity : Activity() {
                 px(54f)
 
             val bodyTop =
-                px(14f)
+                px(10f)
 
             val radius =
                 px(7f)
